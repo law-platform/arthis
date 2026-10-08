@@ -46,11 +46,6 @@
   <div id="more-wrap" class="more-wrap" hidden><button id="more" type="button">さらに表示</button></div>
 
   <div id="browse">
-  <div class="search-row title-filter">
-    <input id="q" type="search" autocomplete="off" aria-label="題名で絞り込み" placeholder="一覧を題名・年月日で絞り込み（例：整理会　1895.10）">
-    <button id="clear" type="button" title="クリア" aria-label="クリア">×</button>
-  </div>
-  <p id="status" class="mt-2 text-sm text-gray-500"></p>
   <section class="group">
     <h2 class="group-title">明治民法<small>272 回</small></h2>
   <details class="series doc-toc" id="129a0089_1"><summary>法典調査会 民法<small>267 回</small></summary><div class="toc-body">
@@ -996,30 +991,6 @@
 <script src="normalize.js"></script>
 <script src="search.js"></script>
 <script>
-const q = document.getElementById('q');
-const status = document.getElementById('status');
-const series = [...document.querySelectorAll('.series')];
-// 系列は折りたたんでおき、絞り込み中は該当のある系列だけを開く
-function filter() {
-  const words = q.value.trim().split(/\s+/).filter(Boolean);
-  let total = 0;
-  for (const s of series) {
-    let n = 0;
-    for (const tr of s.querySelectorAll('tbody tr')) {
-      const hit = words.every(w => tr.textContent.includes(w));
-      tr.hidden = !hit; if (hit) n++;
-    }
-    s.hidden = n === 0;
-    s.open = words.length > 0 && n > 0;
-    total += n;
-  }
-  for (const g of document.querySelectorAll('.group')) {
-    g.hidden = [...g.querySelectorAll('.series')].every(s => s.hidden);
-  }
-  status.textContent = words.length ? total + ' 回' : '';
-}
-q.addEventListener('input', filter);
-document.getElementById('clear').addEventListener('click', () => { q.value = ''; filter(); q.focus(); });
 // 各回のページの「← 議事録一覧」(index.html#系列) から戻ったときは、その系列を開く
 const target = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
 if (target?.classList.contains('series')) { target.open = true; target.scrollIntoView(); }

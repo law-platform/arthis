@@ -90,10 +90,6 @@
 }
 .hint { margin: 10px 0 0; font-size: 0.75rem; color: var(--muted); line-height: 1.6; }
 
-/* 一覧の題名での絞り込み（全文検索より控えめに） */
-.title-filter { margin: 8px 0 0; }
-.title-filter input { padding: 6px 10px; font-size: 0.9375rem; }
-
 /* ── 全文検索の結果（juridic の検索結果カードと同じ作り） ── */
 .badge {
   display: inline-block;
