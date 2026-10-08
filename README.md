@@ -1,4 +1,4 @@
-# 議事録
+# 明治法典編纂議事録
 
 明治期の法典編纂に関わる会議（法律取調委員会・法典調査会など）の議事録の本文を、原本画像と並べて読む静的サイト。
 原本画像は国立国会図書館デジタルコレクションの IIIF から表示する（GitHub Pages でそのまま公開できる）。
@@ -6,7 +6,8 @@
 ## 構成
 
 ```
-minutes/index.html     議事録一覧（分野 > 会議体 > 各回）
+index.html             リポジトリ直下から minutes/ へ移す
+minutes/index.html     議事録一覧（分野 > 会議体 > 各回）と全文検索
 minutes/<議事録>.html  各回の本文。議題ごとの「原本 →」から原本画像を並べて表示する
 minutes/style.css      見た目（明治法律辞書検索 juridic と共通の作り）
 minutes/minutes.js     原本画像ビューア（OpenSeadragon で IIIF 画像を表示し、スクロールに連動させる）と検索語の強調
