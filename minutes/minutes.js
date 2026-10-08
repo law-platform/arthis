@@ -1,3 +1,37 @@
+// 一覧の全文検索から開かれたとき（?q=…）は、本文中の検索語を強調し、該当の議題（#pN）か最初の該当箇所へ移る
+//   正規化は normalize.js（一覧の検索と同じ）。段落をまたぐ語は強調しない
+(async () => {
+  const q = new URLSearchParams(location.search).get('q');
+  const N = window.MinutesNorm;
+  const root = document.querySelector('.minutes');
+  if (!q || !N || !root) return;
+  await N.load('search/');
+  const terms = N.terms(q);
+  if (!terms.length) return;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  for (const node of nodes) {
+    const text = node.nodeValue;
+    const ranges = N.ranges(N.norm(text), terms);
+    if (!ranges.length) continue;
+    const frag = document.createDocumentFragment();
+    let pos = 0;
+    for (const [s, e] of ranges) {
+      frag.append(text.slice(pos, s));
+      const m = document.createElement('mark');
+      m.textContent = text.slice(s, e);
+      frag.append(m);
+      pos = e;
+    }
+    frag.append(text.slice(pos));
+    node.replaceWith(frag);
+  }
+  const target = location.hash && document.getElementById(location.hash.slice(1));
+  const first = (target && target.querySelector('mark')) || root.querySelector('mark');
+  if (first) first.scrollIntoView({ block: 'center' });
+})();
+
 // 原本画像ビューア：国立国会図書館デジタルコレクションの IIIF 画像を本文の横（狭い画面では下）に表示する
 //   各カードの data-pid / data-frame がコマを指す。「原本 →」のクリックでそのコマを開き、
 //   「本文に連動」が有効なら、スクロールに合わせて表示中の議題のコマに切り替える

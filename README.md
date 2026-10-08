@@ -9,7 +9,14 @@
 minutes/index.html     議事録一覧（分野 > 会議体 > 各回）
 minutes/<議事録>.html  各回の本文。議題ごとの「原本 →」から原本画像を並べて表示する
 minutes/style.css      見た目（明治法律辞書検索 juridic と共通の作り）
-minutes/minutes.js     原本画像ビューア（OpenSeadragon で IIIF 画像を表示し、スクロールに連動させる）
+minutes/minutes.js     原本画像ビューア（OpenSeadragon で IIIF 画像を表示し、スクロールに連動させる）と検索語の強調
+minutes/search.js      本文の全文検索（一覧ページ）
+minutes/normalize.js   検索語と本文の正規化（旧字・新字、カタカナ・ひらがな、全角・半角を同一視。juridic と同じ）
+minutes/search/        全文検索のデータ
+  pages.json             議事録の一覧（索引での番号の順）
+  idx/NNN.json           索引（正規化した 1 文字・2 文字 → それを含む回）。検索語に必要なファイルだけ読み込む
+  text/<議事録>.json     議題ごとの本文。候補の回だけ読み込み、該当箇所と前後の文脈を出す
+  norm.json              旧字→新字の対応表
 ```
 
 `minutes/` の中身はすべて、このリポジトリの外にある変換プログラム

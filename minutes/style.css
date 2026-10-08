@@ -51,7 +51,7 @@
   padding: 16px;
 }
 .search-row { display: flex; gap: 8px; }
-#q {
+.search-row input {
   flex: 1;
   min-width: 0;
   font: inherit;
@@ -61,9 +61,9 @@
   border-radius: 6px;
   background: #fff;
 }
-#q:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
-#q::-webkit-search-cancel-button { display: none; }
-#clear {
+.search-row input:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
+.search-row input::-webkit-search-cancel-button { display: none; }
+.search-row button {
   font: inherit;
   width: 44px;
   border: 1px solid #d1d5db;
@@ -72,8 +72,62 @@
   color: var(--muted);
   cursor: pointer;
 }
-#clear:hover { background: #f3f4f6; }
+.search-row button:hover { background: #f3f4f6; }
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  margin-top: 12px;
+  font-size: 0.875rem;
+}
+.options select {
+  font: inherit;
+  color: var(--ink);
+  padding: 2px 6px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+}
 .hint { margin: 10px 0 0; font-size: 0.75rem; color: var(--muted); line-height: 1.6; }
+
+/* 一覧の題名での絞り込み（全文検索より控えめに） */
+.title-filter { margin: 8px 0 0; }
+.title-filter input { padding: 6px 10px; font-size: 0.9375rem; }
+
+/* ── 全文検索の結果（juridic の検索結果カードと同じ作り） ── */
+.badge {
+  display: inline-block;
+  padding: 0 8px;
+  border-radius: 9999px;
+  border: 1px solid #d1d5db;
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  color: #374151;
+  white-space: nowrap;
+}
+.result .crumb { color: var(--muted); font-size: 0.8125rem; }
+.hw { margin: 0; font-size: 1.125rem; font-weight: 700; color: var(--ink); }
+.kwic { margin: 6px 0 0; padding: 0; list-style: none; font-size: 0.9375rem; line-height: 1.8; }
+.kwic li { padding: 4px 0; border-bottom: 1px dashed var(--border); }
+.kwic li:last-child { border-bottom: none; }
+.entry .kwic a { display: block; color: var(--ink); }
+.entry .kwic a:hover { background: var(--accent-soft); text-decoration: none; }
+.kwic .who { margin-right: 8px; font-weight: 500; color: var(--muted); font-size: 0.8125rem; }
+.more-hits { margin: 6px 0 0; font-size: 0.8125rem; }
+mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; }
+
+.more-wrap { text-align: center; margin: 16px 0; }
+#more {
+  font: inherit;
+  font-size: 0.875rem;
+  padding: 8px 24px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+#more:hover { background: #f3f4f6; }
 
 /* ── 議題ごとのカード（juridic の検索結果カードと同じ作り） ── */
 .entry {

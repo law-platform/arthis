@@ -26,15 +26,31 @@
     <p class="mt-2 text-sm text-gray-500">884 回</p>
   </div>
 
-  <section class="search-panel" aria-label="絞り込み">
+  <section class="search-panel" aria-label="本文の全文検索">
     <div class="search-row">
-      <input id="q" type="search" autocomplete="off" aria-label="絞り込み" placeholder="題名・年月日で絞り込み（例：整理会　1895.10）">
-      <button id="clear" type="button" title="クリア" aria-label="クリア">×</button>
+      <input id="fq" type="search" autocomplete="off" aria-label="本文を検索" placeholder="本文を検索（例：家督相續　配偶者）">
+      <button id="fclear" type="button" title="クリア" aria-label="クリア">×</button>
     </div>
-    <p class="hint">複数語は空白区切りで AND 検索。各回のページでは、議題ごとの「原本 →」から国立国会図書館デジタルコレクションの原本画像（IIIF）を本文と並べて表示できます。</p>
+    <div class="options">
+      <label>分野 <select id="fgroup"><option value="">すべて</option>        <option value="0">明治民法</option>
+        <option value="1">旧民法・法例</option>
+        <option value="2">明治商法</option>
+        <option value="3">旧商法</option>
+      </select></label>
+    </div>
+    <p class="hint">複数語は空白区切りで AND 検索（同じ議題の中にすべてを含む箇所）。旧字・新字（權／権）、カタカナ・ひらがな、全角・半角の違いは区別しません。各回のページでは、議題ごとの「原本 →」から国立国会図書館デジタルコレクションの原本画像（IIIF）を本文と並べて表示できます。</p>
   </section>
 
-  <p id="status" class="mt-6 mb-4 text-sm text-gray-500"></p>
+  <p id="fstatus" class="mt-6 mb-4 text-sm text-gray-500"></p>
+  <section id="results" aria-live="polite"></section>
+  <div id="more-wrap" class="more-wrap" hidden><button id="more" type="button">さらに表示</button></div>
+
+  <div id="browse">
+  <div class="search-row title-filter">
+    <input id="q" type="search" autocomplete="off" aria-label="題名で絞り込み" placeholder="一覧を題名・年月日で絞り込み（例：整理会　1895.10）">
+    <button id="clear" type="button" title="クリア" aria-label="クリア">×</button>
+  </div>
+  <p id="status" class="mt-2 text-sm text-gray-500"></p>
   <section class="group">
     <h2 class="group-title">明治民法<small>272 回</small></h2>
   <details class="series doc-toc" id="129a0089_1"><summary>法典調査会 民法<small>267 回</small></summary><div class="toc-body">
@@ -963,6 +979,7 @@
     </tbody></table>
   </div></details>
   </section>
+  </div>
 
 </div>
 
@@ -976,6 +993,8 @@
     </div>
   </div>
 </footer>
+<script src="normalize.js"></script>
+<script src="search.js"></script>
 <script>
 const q = document.getElementById('q');
 const status = document.getElementById('status');
