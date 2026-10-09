@@ -17,12 +17,14 @@ minutes/search/        全文検索のデータ
   pages.json             議事録の一覧（索引での番号の順）
   idx/NNN.json           索引（正規化した 1 文字・2 文字 → それを含む回）。検索語に必要なファイルだけ読み込む
   text/<議事録>.json     議題ごとの本文。候補の回だけ読み込み、該当箇所と前後の文脈を出す
-  norm.json              旧字→新字の対応表（法律情報基盤の共通の対応表 common/kanji_normalize.tsv のうち 1 文字→1 文字のもの）
+  norm.json              旧字→新字の対応表（法律情報基盤の直下にある共通の対応表 kanji_normalize.tsv のうち 1 文字→1 文字のもの）
 ```
 
 `minutes/` の中身はすべて、このリポジトリの外にある変換プログラム
 `arthis/program/convert_minutes_to_html.ps1` が、元データ `arthis/data/minutes/*.xml`（TEI）から生成する。
 一覧の階層（どの議事録をどの分野・会議体に入れるか）は `arthis/data/minutes_index.json` で定める。
+`arthis/data/minutes/adapted/*.xml`（原文を現代文にしたものなど）は各回のページだけを作り、一覧・前後の回・全文検索には入れない。
+原文の書誌情報の「関連」（TEI の `relatedItem`）からだけ辿れる。
 
 ## データの更新
 
