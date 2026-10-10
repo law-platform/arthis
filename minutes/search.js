@@ -216,9 +216,9 @@
     }
   }
 
-  let timer = 0;
-  input.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(search, 400); });
-  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { clearTimeout(timer); search(); } });
+  // 入力中は検索せず、Enter・検索ボタンで検索する
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') search(); });
+  document.getElementById('fsubmit').addEventListener('click', search);
   groupSel.addEventListener('change', search);
   document.getElementById('fclear').addEventListener('click', () => { input.value = ''; search(); input.focus(); });
   moreBtn.addEventListener('click', () => { if (run) showMore(run); });

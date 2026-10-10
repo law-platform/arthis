@@ -73,6 +73,16 @@
   cursor: pointer;
 }
 .search-row button:hover { background: #f3f4f6; }
+/* 検索ボタン（SCAPIN-DB の Search ボタンと同じ） */
+.search-row #fsubmit {
+  width: auto;
+  flex: none;
+  padding: 0 24px;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+}
+.search-row #fsubmit:hover { background: #1d4ed8; }
 .options {
   display: flex;
   flex-wrap: wrap;
