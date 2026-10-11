@@ -36,9 +36,9 @@
 //   各カードの data-pid / data-frame がコマを指す。「原本 →」のクリックでそのコマを開き、
 //   「本文に連動」が有効なら、スクロールに合わせて表示中の議題のコマに切り替える
 //   対訳・版の比較の頁（左右の欄 data-side="L|R"）では、最後に「原本 →」を押した側の列のカードに連動する（初めは左）
+//   開いた状態は記憶しない（頁を移ると閉じた状態から始まる）
 (() => {
   const OSD_URL = 'https://cdnjs.cloudflare.com/ajax/libs/openseadragon/5.0.1/openseadragon.min.js';
-  const STORE_KEY = 'minutes-viewer-open';
   const allParts = [...document.querySelectorAll('.part[data-frame]')];
   if (!allParts.length) return;
   const sideOf = (el) => el.closest('[data-side]')?.dataset.side ?? null;
@@ -53,10 +53,6 @@
 
   const iiifInfo = (pid, frame) => `https://dl.ndl.go.jp/api/iiif/${pid}/R${String(frame).padStart(7, '0')}/info.json`;
   const ndlPage = (pid, frame) => `https://dl.ndl.go.jp/pid/${pid}/1/${frame}`;
-  const store = {
-    get() { try { return localStorage.getItem(STORE_KEY) === '1'; } catch { return false; } },
-    set(v) { try { localStorage.setItem(STORE_KEY, v ? '1' : '0'); } catch { /* 保存できなくても動作には影響しない */ } },
-  };
 
   // ── 画面部品 ──
   const panel = document.createElement('aside');
@@ -155,14 +151,12 @@
   function open(card) {
     panel.hidden = false;
     document.body.classList.add('viewer-open');
-    store.set(true);
     showCard(card || currentCard());
   }
 
   function close() {
     panel.hidden = true;
     document.body.classList.remove('viewer-open');
-    store.set(false);
     markCard(null);
   }
 
@@ -216,6 +210,4 @@
     requestAnimationFrame(() => { ticking = false; showCard(currentCard()); });
   }, { passive: true });
 
-  // 前のページで開いていたら、このページでも開く
-  if (store.get()) open();
 })();
