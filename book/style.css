@@ -217,6 +217,8 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .book h2.b-head { font-size: 1.25rem; }
 .book h3.b-head { font-size: 1.125rem; }
 .book h4.b-head, .book h5.b-head, .book h6.b-head { font-size: 1rem; }
+/* 訳されていない見出し（空の head）：番号だけを補って灰色で */
+.book .b-head.b-missing { color: #9ca3af; font-weight: 400; }
 .book .entry p + p { margin-top: 0.5em; }
 .book .entry { overflow-wrap: anywhere; }
 /* 圏点（emph rend="open circle"） */
@@ -238,6 +240,7 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .toc-list .d3 { padding-left: 4.5em; }
 .toc-list .d4 { padding-left: 6em; }
 .toc-list .current { font-weight: 700; }
+.toc-list .missing a { color: #9ca3af; }
 
 /* ── 対訳・版の比較（book/*_pair_NN.html）：1 行 = 左右 2 つの欄。data-layout="alt" と狭い画面では交互（縦に並べる） ── */
 .pair-link { color: var(--accent); text-decoration: none; white-space: nowrap; }
