@@ -282,7 +282,35 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
   color: var(--muted);
 }
 .pair[data-layout="alt"] .pair-headrow .pair-cell[data-side="R"] .b-head { margin-top: 0; }
+/* 段落ごとに揃えた行（.pp）：左右 2 列の格子に、前置き（条文・原本へのリンク）と段落を 1 行ずつ置き、
+   左右それぞれの列を 1 枚のカードに見せる。交互では段落ごとに原文・和訳を交互に並べる */
+.pp { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 16px; margin-bottom: 16px; }
+.pp-cell {
+  min-width: 0;
+  padding: 4px 16px;
+  overflow-wrap: anywhere;
+  background: var(--card-bg);
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+.pp-cell p { margin: 0; }
+.pp-top { padding-top: 16px; border-top: 1px solid var(--border); border-radius: 8px 8px 0 0; }
+.pp-top:empty { padding-top: 8px; }
+.pp-cell.pp-bottom { padding-bottom: 16px; border-bottom: 1px solid var(--border); border-radius: 0 0 8px 8px; box-shadow: var(--shadow); }
+/* 段落の行の区切り（左右で同じ高さ） */
+.pp-cell:not(.pp-top) { padding-top: 6px; padding-bottom: 6px; }
+.pp-cell:not(.pp-top):not(:nth-child(-n+4)) { border-top: 1px dashed #eef0f3; }
+.pp-top.is-shown { border-color: var(--accent); }
+.pair[data-layout="alt"] .pp { grid-template-columns: minmax(0, 1fr); }
+.pair[data-layout="alt"] .pp-cell { margin-bottom: 6px; padding: 10px 16px; border: 1px solid var(--border); border-radius: 8px; }
+.pair[data-layout="alt"] .pp-cell[data-side="R"] { margin-bottom: 14px; background: #f8fafc; }
+.pair[data-layout="alt"] .pp-top:not(:empty)::before { content: attr(data-label); display: block; margin-bottom: 2px; font-size: 0.75rem; color: var(--muted); }
+
 @media (max-width: 767px) {
+  .pp { grid-template-columns: minmax(0, 1fr); }
+  .pp-cell { margin-bottom: 6px; padding: 10px 16px; border: 1px solid var(--border); border-radius: 8px; }
+  .pp-cell[data-side="R"] { margin-bottom: 14px; background: #f8fafc; }
+  .pp-top::before { content: attr(data-label); display: block; margin-bottom: 2px; font-size: 0.75rem; color: var(--muted); }
   .pair-tools { display: none; }
   .pair .pair-row { grid-template-columns: minmax(0, 1fr); }
   .pair .pair-legend { display: none; }
