@@ -35,11 +35,21 @@
 // 原本画像ビューア：国立国会図書館デジタルコレクションの IIIF 画像を本文の横（狭い画面では下）に表示する
 //   各カードの data-pid / data-frame がコマを指す。「原本 →」のクリックでそのコマを開き、
 //   「本文に連動」が有効なら、スクロールに合わせて表示中の議題のコマに切り替える
+//   対訳・版の比較の頁（左右の欄 data-side="L|R"）では、最後に「原本 →」を押した側の列のカードに連動する（初めは左）
 (() => {
   const OSD_URL = 'https://cdnjs.cloudflare.com/ajax/libs/openseadragon/5.0.1/openseadragon.min.js';
   const STORE_KEY = 'minutes-viewer-open';
-  const parts = [...document.querySelectorAll('.part[data-frame]')];
-  if (!parts.length) return;
+  const allParts = [...document.querySelectorAll('.part[data-frame]')];
+  if (!allParts.length) return;
+  const sideOf = (el) => el.closest('[data-side]')?.dataset.side ?? null;
+  let side = null;
+  let parts = allParts;
+  function setSide(s) {
+    const own = allParts.filter((p) => sideOf(p) === s);
+    side = own.length ? s : null;
+    parts = side ? own : allParts;
+  }
+  if (allParts.some((p) => sideOf(p))) setSide(allParts.some((p) => sideOf(p) === 'L') ? 'L' : 'R');
 
   const iiifInfo = (pid, frame) => `https://dl.ndl.go.jp/api/iiif/${pid}/R${String(frame).padStart(7, '0')}/info.json`;
   const ndlPage = (pid, frame) => `https://dl.ndl.go.jp/pid/${pid}/1/${frame}`;
@@ -193,6 +203,7 @@
     if (!src) return;
     e.preventDefault();
     const card = src.closest('.part');
+    if (sideOf(card)) setSide(sideOf(card));
     followBox.checked = true;
     open(card);
     card.scrollIntoView({ block: 'start', behavior: 'smooth' });

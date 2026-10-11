@@ -208,6 +208,94 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 /* 幅は変換スクリプトの $JustifyMax（8文字）に合わせる */
 .m-list ul.names li { width: 8em; text-align-last: justify; }
 
+/* ── 書籍（book/）の本文 ── */
+.book .b-head { margin: 28px 0 12px; font-weight: 700; color: var(--ink); letter-spacing: 0.05em; line-height: 1.6; scroll-margin-top: 16px; }
+.book .b-head:first-child { margin-top: 0; }
+.book h2.b-head { font-size: 1.25rem; }
+.book h3.b-head { font-size: 1.125rem; }
+.book h4.b-head, .book h5.b-head, .book h6.b-head { font-size: 1rem; }
+.book .entry p + p { margin-top: 0.5em; }
+.book .entry { overflow-wrap: anywhere; }
+/* 圏点（emph rend="open circle"） */
+.kenten { font-style: normal; -webkit-text-emphasis: open circle; text-emphasis: open circle; }
+.emph { font-style: normal; font-weight: 700; }
+.b-trailer { margin-top: 8px; text-align: center; color: var(--muted); }
+.b-fw { font-size: 0.8125rem; color: #9ca3af; }
+.b-figure { font-size: 0.875rem; color: var(--muted); }
+.b-titlepage { text-align: center; }
+.b-doctitle { font-size: 1.25rem; font-weight: 700; letter-spacing: 0.1em; }
+
+/* 目次（書籍の一覧・各頁の「この巻の目次」「この頁の見出し」）。d0～d4 は見出しの深さ */
+.vol-title { margin: 14px 0 4px; font-size: 0.9375rem; font-weight: 700; color: var(--ink); }
+.vol-title:first-child { margin-top: 0; }
+.toc-list { margin: 0; padding: 0; list-style: none; font-size: 0.9375rem; line-height: 1.7; }
+.toc-list li { padding: 2px 0; }
+.toc-list .d1 { padding-left: 1.5em; }
+.toc-list .d2 { padding-left: 3em; }
+.toc-list .d3 { padding-left: 4.5em; }
+.toc-list .d4 { padding-left: 6em; }
+.toc-list .current { font-weight: 700; }
+
+/* ── 対訳・版の比較（book/*_pair_NN.html）：1 行 = 左右 2 つの欄。data-layout="alt" と狭い画面では交互（縦に並べる） ── */
+.pair-link { color: var(--accent); text-decoration: none; white-space: nowrap; }
+.pair-link:hover { text-decoration: underline; }
+.pair-title { color: var(--accent); }
+.pair-tools { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; font-size: 0.875rem; color: var(--muted); }
+.pair-tools button {
+  font: inherit;
+  padding: 2px 12px;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.pair-tools button:hover { background: #f3f4f6; }
+.pair-tools button[aria-pressed="true"] { color: #fff; background: var(--accent); border-color: var(--accent); }
+.pair-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 16px; }
+.pair-cell { min-width: 0; }
+/* 同じ行の左右のカードの高さを揃える（欄にカードが 1 枚のとき） */
+.pair .pair-cell > .entry:only-child { height: calc(100% - 16px); }
+.pair-legend {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  margin-bottom: 8px;
+  padding: 6px 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: #f9fafb;
+  border-bottom: 1px solid var(--border);
+}
+.pair-headrow .b-head { margin: 24px 0 10px; }
+/* 交互：左の欄の次に右の欄。欄の名前（原文・和訳など）を添える */
+.pair[data-layout="alt"] .pair-row { grid-template-columns: minmax(0, 1fr); }
+.pair[data-layout="alt"] .pair-legend { display: none; }
+.pair[data-layout="alt"] .pair-cell > .entry:only-child { height: auto; }
+.pair[data-layout="alt"] .pair-row:not(.pair-headrow) .pair-cell:not(:empty)::before,
+.pair[data-layout="alt"] .pair-headrow .pair-cell[data-side="R"]:not(:empty)::before {
+  content: attr(data-label);
+  display: block;
+  margin-bottom: 2px;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.pair[data-layout="alt"] .pair-headrow .pair-cell[data-side="R"] .b-head { margin-top: 0; }
+@media (max-width: 767px) {
+  .pair-tools { display: none; }
+  .pair .pair-row { grid-template-columns: minmax(0, 1fr); }
+  .pair .pair-legend { display: none; }
+  .pair .pair-cell > .entry:only-child { height: auto; }
+  .pair .pair-row:not(.pair-headrow) .pair-cell:not(:empty)::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 2px;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+}
+
 /* ── 前後の回 ── */
 .pager { display: flex; justify-content: space-between; gap: 16px; margin: 24px 0 8px; font-size: 0.875rem; }
 .pager a {

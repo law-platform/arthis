@@ -1,5 +1,5 @@
-// 本文の全文検索（一覧ページ）
-//   search/pages.json     議事録の一覧（索引での番号の順）と、索引を分けたファイルの数
+// 本文の全文検索（一覧ページ。議事録 minutes/ と書籍 book/ で共通）
+//   search/pages.json     ページの一覧（索引での番号の順）と、索引を分けたファイルの数、件数の単位（unit）
 //   search/idx/NNN.json   見出し（正規化した 1 文字・隣り合う 2 文字）→ それを含む議事録の番号（差分で並べたもの）
 //   search/text/<ページ>.json  議題ごとの本文。候補の回だけ読み込み、語を含む議題を確かめて前後の文脈を出す
 //   見出しの作り方と振り分けの式は program/minutes_search.cs と同じ
@@ -157,8 +157,9 @@
   // ── 検索の実行 ──
   function setStatus(r) {
     const done = r.next >= r.cand.length;
+    const unit = meta.unit || '回';   // 議事録は「回」、書籍は「頁」
     if (done && !r.pages) { statusEl.textContent = '該当する箇所はありません'; return; }
-    statusEl.textContent = `${r.pages} 回・${r.hits} 箇所` + (done ? '' : `（候補 ${r.cand.length} 回のうち ${r.next} 回を確認済み）`);
+    statusEl.textContent = `${r.pages} ${unit}・${r.hits} 箇所` + (done ? '' : `（候補 ${r.cand.length} ${unit}のうち ${r.next} ${unit}を確認済み）`);
   }
 
   async function showMore(r) {

@@ -1,37 +1,52 @@
-# 明治法典編纂議事録
+# 条文沿革データベース
 
-明治期の法典編纂に関わる会議（法律取調委員会・法典調査会など）の議事録の本文を、原本画像と並べて読む静的サイト。
+明治期の民法・商法の編纂に関わる資料（議事録・理由書・注釈書など）の本文を、原本画像と並べて読み、全文検索する静的サイト。
 原本画像は国立国会図書館デジタルコレクションの IIIF から表示する（GitHub Pages でそのまま公開できる）。
 
 ## 構成
 
 ```
-index.html             リポジトリ直下から minutes/ へ移す
-minutes/index.html     議事録一覧（分野 > 会議体 > 各回）と全文検索
-minutes/<議事録>.html  各回の本文。議題ごとの「原本 →」から原本画像を並べて表示する
-minutes/style.css      見た目（明治法律辞書検索 juridic と共通の作り）
-minutes/minutes.js     原本画像ビューア（OpenSeadragon で IIIF 画像を表示し、スクロールに連動させる）と検索語の強調
-minutes/search.js      本文の全文検索（一覧ページ）
-minutes/normalize.js   検索語と本文の正規化（旧字・新字、カタカナ・ひらがな、全角・半角を同一視。juridic と同じ）
-minutes/search/        全文検索のデータ
-  pages.json             議事録の一覧（索引での番号の順）
-  idx/NNN.json           索引（正規化した 1 文字・2 文字 → それを含む回）。検索語に必要なファイルだけ読み込む
-  text/<議事録>.json     議題ごとの本文。候補の回だけ読み込み、該当箇所と前後の文脈を出す
-  norm.json              旧字→新字の対応表（法律情報基盤の直下にある共通の対応表 kanji_normalize.tsv のうち 1 文字→1 文字のもの）
+index.html             入口。各区画（議事録・書籍…）への案内
+style.css              入口の見た目（各区画の style.css と同じもの）
+minutes/               明治法典編纂議事録（法律取調委員会・法典調査会など）
+  index.html             議事録一覧（分野 > 会議体 > 各回）と全文検索
+  <議事録>.html          各回の本文。議題ごとの「原本 →」から原本画像を並べて表示する
+book/                  明治法典 理由書・注釈書（エクスポゼ、民法草案理由書、ロエスレル商法草案、商法修正案参考書、民法要義など）
+  index.html             書籍一覧（分野 > 書物 > 巻 > 頁）と全文検索
+  <元データ>_NN.html      本文。大きな書物は編・章・節ごとに頁に分ける。条ごとのカード、原本画像のあるものは「原本 →」
+  <元データ>_pair_NN.html 対訳（エクスポゼ・ロエスレルの原文と和訳）と版の比較（民法要義の初版と 34 版）。
+                         2 つの巻を条ごとに揃えて左右に並べる（「交互に並べる」に切り替えられ、狭い画面では常に交互）。全文検索には入れない
+  pair.js                左右・交互の切り替え
+各区画の共通の中身:
+  style.css              見た目（明治法律辞書検索 juridic と共通の作り）
+  minutes.js             原本画像ビューア（OpenSeadragon で IIIF 画像を表示し、スクロールに連動させる）と検索語の強調
+  search.js              本文の全文検索（一覧ページ）
+  normalize.js           検索語と本文の正規化（旧字・新字、カタカナ・ひらがな、全角・半角を同一視。juridic と同じ）
+  search/                全文検索のデータ
+    pages.json             ページの一覧（索引での番号の順）
+    idx/NNN.json           索引（正規化した 1 文字・2 文字 → それを含むページ）。検索語に必要なファイルだけ読み込む
+    text/<ページ>.json     カードごとの本文。候補のページだけ読み込み、該当箇所と前後の文脈を出す
+    norm.json              旧字→新字の対応表（法律情報基盤の直下にある共通の対応表 kanji_normalize.tsv のうち 1 文字→1 文字のもの）
 ```
 
-`minutes/` の中身はすべて、このリポジトリの外にある変換プログラム
-`arthis/program/convert_minutes_to_html.ps1` が、元データ `arthis/data/minutes/*.xml`（TEI）から生成する。
-一覧の階層（どの議事録をどの分野・会議体に入れるか）は `arthis/data/minutes_index.json` で定める。
-`arthis/data/minutes/adapted/*.xml`（原文を現代文にしたものなど）は各回のページだけを作り、一覧・前後の回・全文検索には入れない。
-原文の書誌情報の「関連」（TEI の `relatedItem`）からだけ辿れる。
+このリポジトリの中身はすべて、リポジトリの外にある変換プログラム（`arthis/program/`）が元データ（`arthis/data/`、TEI）から生成する。
+
+- `minutes/` … `convert_minutes_to_html.ps1` が `data/minutes/*.xml` から。一覧の階層は `data/minutes_index.json` で定める。
+  `data/minutes/adapted/*.xml`（原文を現代文にしたものなど）は各回のページだけを作り、一覧・前後の回・全文検索には入れない。原文の書誌情報の「関連」（TEI の `relatedItem`）からだけ辿れる。
+- `book/` … `convert_book_to_html.ps1` が `data/book/*.xml` から。一覧の階層（分野・書物・巻の表示名と順序）と、並べて読む組（`parallels`）は `data/book_index.json` で定める。
+  並べる組は、条などのまとまりの `corresp` が同じものを手がかりに行を揃える。
+- `index.html` … `write_site_index.ps1`（上の 2 つが最後に呼ぶ）。区画のフォルダ（`minutes/`・`book/`・`doc/`）があるものだけを並べる。
+
+ヘッダー・フッター・書誌情報の表示は `site_common.ps1`、見た目とスクリプトは `site_assets/` を各区画で共有する。
 
 ## データの更新
 
-`arthis/data/minutes/` の TEI や `arthis/data/minutes_index.json` を変えたら、`arthis/` 直下で:
+`arthis/data/` の TEI や一覧の定義を変えたら、`arthis/` 直下で:
 
 ```
 powershell -File program\convert_minutes_to_html.ps1
+powershell -File program\convert_book_to_html.ps1
 ```
 
-1 回分だけ確かめるときは `-Only <出力ファイル名>`（例: `-Only 129a0089_1_g18960701_180.html`）を付ける。
+1 件だけ確かめるときは `-Only` を付ける（議事録は出力ファイル名、例: `-Only 129a0089_1_g18960701_180.html`。書籍は元データのファイル名、例: `-Only "129a0089_131a0009_minpoyogi#2-01ed.xml"`）。
+全文検索の索引は全件を変換したときだけ作り直すので、`-Only` で本文を変えたときは最後に全件を変換し直す。
