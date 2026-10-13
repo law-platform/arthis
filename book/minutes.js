@@ -211,3 +211,34 @@
   }, { passive: true });
 
 })();
+
+// 一覧の全文検索から開かれたとき（?q=…）は、上端のリンク（#back-link）を「← 検索結果に戻る」にする（司法省日誌と同じ）。
+// 一覧から来た場合は、目次などで移動して増えた履歴もまとめて遡って戻る（「さらに表示」で出した分・スクロール位置も
+// 一覧の search.js が戻す）。別タブで開いた等で戻る先が無いときは同じ検索語で開き直す
+(() => {
+  const q = new URLSearchParams(location.search).get('q');
+  const link = document.getElementById('back-link');
+  if (!q || !link) return;
+  link.textContent = '← 検索結果に戻る';
+  link.href = 'index.html?' + new URLSearchParams({ q });
+  const list = new URL('index.html', location.href).pathname;
+  let fromSearch = false;
+  try {
+    const ref = new URL(document.referrer);
+    fromSearch = ref.origin === location.origin && (ref.pathname === list || ref.pathname === list.slice(0, -'index.html'.length));
+  } catch (e) {}
+  if (!fromSearch) return;
+  // このページに来てから増えた履歴の数を、各履歴の state に記録しておく
+  let depth = history.state?.backDepth || 0;
+  history.replaceState({ ...history.state, backDepth: depth }, '');
+  addEventListener('hashchange', () => {
+    if (typeof history.state?.backDepth === 'number') depth = history.state.backDepth;
+    else history.replaceState({ backDepth: ++depth }, '');
+  });
+  link.addEventListener('click', (e) => {
+    if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+    if (history.length <= depth + 1) return;
+    e.preventDefault();
+    history.go(-(depth + 1));
+  });
+})();

@@ -159,7 +159,7 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .entry-meta .pair-link { margin-left: auto; font-size: 0.75rem; }
 .entry-meta .pair-link + .source { margin-left: 12px; }
 
-.part { scroll-margin-top: 16px; }
+.part { scroll-margin-top: 48px; }  /* 上端に固定した「← 一覧」に隠れないように */
 .part:target { outline: 3px solid #eda100; outline-offset: 2px; }
 /* 原本画像に表示中の箇所 */
 .part.is-shown { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
@@ -212,7 +212,7 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .m-list ul.names li { width: 8em; text-align-last: justify; }
 
 /* ── 書籍（book/）の本文 ── */
-.book .b-head { margin: 28px 0 12px; font-weight: 700; color: var(--ink); letter-spacing: 0.05em; line-height: 1.6; scroll-margin-top: 16px; }
+.book .b-head { margin: 28px 0 12px; font-weight: 700; color: var(--ink); letter-spacing: 0.05em; line-height: 1.6; scroll-margin-top: 48px; }
 .book .b-head:first-child { margin-top: 0; }
 .book h2.b-head { font-size: 1.25rem; }
 .book h3.b-head { font-size: 1.125rem; }
@@ -352,6 +352,17 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .doc-back { margin: 0 0 8px; font-size: 0.875rem; }
 .doc-back a { color: var(--accent); text-decoration: none; }
 .doc-back a:hover { text-decoration: underline; }
+/* 上端の「← 一覧」は、スクロールしても画面の上端に残す（帯の背景・下線は画面の幅いっぱいに出す） */
+.doc-back-top {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  margin: 0 0 8px;
+  padding: 8px 0;
+  background: #f9fafb;
+  box-shadow: 0 0 0 100vmax #f9fafb, 0 1px 0 100vmax #e5e7eb;
+  clip-path: inset(0 -100vmax -1px -100vmax);
+}
 .src-file { margin-left: 16px; color: #9ca3af; font-size: 0.75rem; }
 
 .viewer-toggle {

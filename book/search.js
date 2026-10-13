@@ -224,11 +224,24 @@
   document.getElementById('fclear').addEventListener('click', () => { input.value = ''; search(); input.focus(); });
   moreBtn.addEventListener('click', () => { if (run) showMore(run); });
 
+  // 本文のページを開いて戻ってきたとき、「さらに表示」で出していた分まで出し直して、結果一覧のスクロール位置を戻す
+  // （結果は戻った後に描き直すので、ブラウザ任せだと先頭に戻ってしまう）。離れるときにその分と位置を履歴に残す
+  addEventListener('pagehide', () => {
+    if (run && run.q) history.replaceState({ ...history.state, resultNext: run.next, resultScrollY: scrollY }, '');
+  });
+  const saved = history.state;
+
   // ?q=…&g=… で開かれたら、その検索を出す
   const params = new URLSearchParams(location.search);
   if (params.get('q')) {
     input.value = params.get('q');
     groupSel.value = params.get('g') || '';
-    search();
+    if (saved?.resultScrollY) history.scrollRestoration = 'manual';
+    search().then(async () => {
+      if (!saved?.resultScrollY) return;
+      const r = run;
+      while (run === r && r.next < Math.min(saved.resultNext || 0, r.cand.length)) await showMore(r);
+      if (run === r) scrollTo(0, saved.resultScrollY);
+    });
   }
 })();
