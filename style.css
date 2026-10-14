@@ -438,6 +438,221 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
   body.viewer-open { padding-bottom: var(--viewer-h); }
 }
 
+/* ── 条文の沿革（lineage/）：成立した条から段階をさかのぼって並べる ── */
+/* 段階の一覧（上端の「← 条文の沿革」の帯の下に固定）。lineage.js が段階ごと（data-view="step"）とすべて（data-view="all"）を切り替える */
+.lin-stepper { position: sticky; top: 37px; z-index: 20; display: flex; align-items: center; gap: 12px; margin: 0 -16px 20px; padding: 8px 16px; background: rgba(249, 250, 251, 0.96); border-bottom: 1px solid var(--border); }
+.lin-stepper ol { flex: 1; display: flex; flex-wrap: wrap; align-items: center; row-gap: 4px; margin: 0; padding: 2px 0; list-style: none; }
+.lin-stepper li { flex: none; display: flex; align-items: center; }
+.lin-stepper li + li::before { content: ""; width: 14px; height: 2px; margin: 0 2px; background: #d1d5db; }
+.lin-stepper a { display: flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 8px; color: var(--muted); text-decoration: none; }
+.lin-stepper a:hover { background: var(--accent-soft); }
+.lin-stepper a.is-current { background: var(--accent-soft); color: var(--ink); box-shadow: inset 0 0 0 1px #bfdbfe; }
+.lin-step-no { flex: none; display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 9999px; border: 1.5px solid #9ca3af; background: #fff; color: var(--muted); font-size: 0.75rem; font-weight: 700; }
+.lin-stepper a.is-current .lin-step-no { background: var(--accent); border-color: var(--accent); color: #fff; }
+.lin-step-final .lin-step-no { border-color: var(--accent); color: var(--accent); }
+.lin-step-text { display: flex; flex-direction: column; line-height: 1.3; }
+.lin-step-body { font-size: 0.6875rem; white-space: nowrap; }
+.lin-step-art { font-size: 0.8125rem; font-weight: 500; white-space: nowrap; }
+/* 表示の切り替えと「前の段階との違い」は、段階の一覧の下の 1 行に右寄せで置き、段階の一覧に横幅を使わせる */
+.lin-stepper { flex-direction: column; align-items: stretch; gap: 6px; }
+.lin-tools { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 6px 14px; }
+.lin-view { display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: #fff; }
+.lin-view button { padding: 4px 10px; font-size: 0.75rem; color: var(--muted); }
+.lin-view button + button { border-left: 1px solid var(--border); }
+.lin-view button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+
+/* 段階：番号付きの見出しの帯、「条文」と「資料」の小見出し */
+.lin-stage { margin: 0 0 28px; scroll-margin-top: 170px; }
+.lin-steps[data-view="step"] .lin-stage:not(.is-current) { display: none; }
+.lin-steps[data-view="all"] .lin-stage + .lin-stage { padding-top: 24px; border-top: 2px solid var(--border); }
+/* 条文だけ：資料を隠し、各段階の条文を続けて並べる */
+.lin-steps[data-view="text"] .lin-stage { margin-bottom: 14px; }
+.lin-steps[data-view="text"] .lin-mat, .lin-steps[data-view="text"] .lin-mat-label { display: none; }
+.lin-steps[data-view="text"] .lin-label { margin-top: 8px; }
+.lin-stage-head { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 8px; background: #e0e7ff; border-left: 4px solid #4338ca; }
+.lin-final .lin-stage-head { background: #dbeafe; border-left-color: var(--accent); }
+.lin-stage-head .lin-step-no { width: 28px; height: 28px; font-size: 0.875rem; background: #4338ca; border-color: #4338ca; color: #fff; }
+.lin-final .lin-stage-head .lin-step-no { background: var(--accent); border-color: var(--accent); }
+.lin-stage-titles { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.lin-stage-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.lin-stage-meta .badge { background: #fff; }
+.lin-step-count { font-size: 0.75rem; color: var(--muted); }
+.lin-stage-title { font-weight: 700; color: var(--ink); margin-right: 8px; }
+.lin-date { font-size: 0.8125rem; color: var(--muted); }
+.lin-label { display: flex; align-items: baseline; gap: 6px; margin: 16px 0 6px; font-size: 0.8125rem; font-weight: 700; color: var(--muted); letter-spacing: 0.05em; }
+.lin-label small { font-weight: 400; }
+
+/* 条文の枠（青）と資料の枠（議事録は緑、書籍は橙） */
+.lin-text { margin-bottom: 0; line-height: 1.9; border-left: 4px solid var(--accent); }
+.lin-art-label { font-weight: 700; margin: 0 0 2px; }
+.lin-caption { color: var(--muted); margin: 0; }
+.lin-para { margin: 0; }
+.lin-para + .lin-para { margin-top: 4px; }
+.lin-num { margin-right: 0.5em; }
+.lin-items { list-style: none; margin: 2px 0 2px 1em; padding: 0; }
+.lin-text .note { font-size: 0.8125rem; color: var(--muted); margin-top: 6px; }
+.lin-text blockquote { margin: 0; padding: 0; border: 0; }
+.lin-amend { margin-top: 8px; font-size: 0.8125rem; color: var(--muted); }
+.lin-amend > summary { cursor: pointer; }
+.lin-amend blockquote { margin-top: 4px; }
+.lin-mat { padding: 0; margin-bottom: 10px; border-left: 4px solid #9ca3af; }
+.lin-mat-minutes { border-left-color: #0d9488; }
+.lin-mat-book { border-left-color: #d97706; }
+.lin-mat > summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; padding: 10px 16px; cursor: pointer; font-size: 0.875rem; }
+.lin-mat > summary small { color: var(--muted); }
+.lin-mat-body { padding: 0 16px 12px; border-top: 1px dashed var(--border); }
+.lin-mat-body > p, .lin-mat-body .speech p { margin: 8px 0 0; line-height: 1.9; }
+.lin-mat-links { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; font-size: 0.75rem; }
+.lin-none { font-size: 0.8125rem; color: #9ca3af; margin: 0 0 10px; }
+
+/* 前の段階との違い：加わった文字（緑の下線）と削られた文字（赤の取り消し線）。スイッチで消せる */
+.lin-diff-toggle { display: flex; align-items: center; gap: 4px; font-size: 0.75rem; color: var(--muted); cursor: pointer; }
+.lin-diff-toggle input { accent-color: var(--accent); }
+.lin-text ins, .lin-diff-note ins { text-decoration: none; background: #dcfce7; color: #166534; border-bottom: 2px solid #16a34a; }
+.lin-text del, .lin-diff-note del { text-decoration: line-through; background: #fee2e2; color: #991b1b; }
+.lin-diff-note { margin-left: 8px; font-weight: 400; letter-spacing: 0; }
+.lin-steps.no-diff del { display: none; }
+.lin-steps.no-diff ins { background: none; color: inherit; border-bottom: 0; }
+.lin-steps.no-diff .lin-diff-note { display: none; }
+
+/* 成立した法律の本文（lineage/index.html）。class は法令標準 XML の要素名（jahis の法令ページと同じ） */
+.law-text { padding: 24px; margin-bottom: 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--card-bg); box-shadow: var(--shadow); line-height: 1.9; }
+.law-src { color: var(--accent); text-decoration: none; }
+.law-src:hover { text-decoration: underline; }
+.law-flow { display: inline-block; padding: 4px 14px; border: 1px solid #bfdbfe; border-radius: 9999px; background: var(--accent-soft); color: var(--accent); font-size: 0.875rem; text-decoration: none; }
+.law-flow:hover { background: #dbeafe; }
+.law-text .PromulgateBody { margin-bottom: 1.5em; }
+.law-text .PromulgateStatement, .law-text .EnactStatement { text-indent: 1em; }
+.law-text .ImperialSignature { padding-left: 12em; }
+.law-text .ApprovalDate { padding-left: 2em; }
+.law-text .Signature { padding-left: 8em; }
+.law-text .LawNum { margin: 1em 0; }
+.law-text .SepVolLabel { margin-top: 1em; }
+.law-text .TOC { margin: 1em 0; }
+.law-text .TOC > summary { cursor: pointer; color: var(--accent); }
+.law-text .TOC a { color: var(--accent); text-decoration: none; }
+.law-text .TOC a:hover { text-decoration: underline; }
+.law-text .TOCLawTitle { margin-top: 0.5em; }
+.law-text .TOCPart, .law-text .TOCChapter, .law-text .TOCSection, .law-text .TOCSubsection, .law-text .TOCDivision { padding-left: 1em; }
+.law-text .LawTitle { margin: 1.5em 0 0.5em; font-size: 1.125rem; font-weight: 700; }
+.law-text .PartTitle, .law-text .ChapterTitle, .law-text .SectionTitle, .law-text .SubsectionTitle, .law-text .DivisionTitle { margin: 1.2em 0 0.4em; font-weight: 700; scroll-margin-top: 48px; }
+.law-text .PartTitle { padding-left: 3em; }
+.law-text .ChapterTitle { padding-left: 4em; }
+.law-text .SectionTitle { padding-left: 5em; }
+.law-text .SubsectionTitle { padding-left: 6em; }
+.law-text .DivisionTitle { padding-left: 7em; }
+/* 本則の左に「沿革」のリンクを置く余白の列（4.5em）を取る */
+.law-text .MainProvision { padding-left: 4.5em; }
+.law-text .Article { position: relative; margin: 0.3em -8px; padding: 0 8px; border-radius: 4px; scroll-margin-top: 48px; }
+.law-text .Article:target { background: #fefce8; }
+.law-text .ArticleCaption { padding-left: 1em; }
+.law-text .ParagraphSentence { padding-left: 1em; text-indent: -1em; }
+/* 2 つ目以降の項（項番号のない古い法令）は 1 字下げて始める */
+.law-text .Paragraph + .Paragraph .ParagraphSentence { text-indent: 0; }
+.law-text .ArticleTitle { font-weight: 700; }
+.law-text .ItemSentence { padding-left: 2em; text-indent: -1em; }
+.law-text .Subitem1Sentence { padding-left: 3em; text-indent: -1em; }
+.law-text .lin-link { position: absolute; top: 0.35em; left: -4.5em; padding: 0 10px; border: 1px solid #bfdbfe; border-radius: 9999px; background: var(--accent-soft); color: var(--accent); font-size: 0.75rem; line-height: 1.6; text-decoration: none; }
+.law-text .lin-link:hover { background: #dbeafe; }
+
+/* 沿革の全体像（lineage/<法令ID>_flow.html）。描くのは lineage_flow.js。流れ図と対照表をタブで切り替える */
+.fl-tabs { display: flex; gap: 4px; margin: 0 0 12px; border-bottom: 1px solid var(--border); }
+.fl-tabs button { padding: 6px 16px; border: 1px solid transparent; border-bottom: 0; border-radius: 8px 8px 0 0; color: var(--accent); font-size: 0.875rem; }
+.fl-tabs button[aria-selected="true"] { margin-bottom: -1px; border-color: var(--border); background: var(--card-bg); color: var(--ink); font-weight: 700; }
+.fl-nav, .fl-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 8px; font-size: 0.875rem; }
+.fl-nav select, .fl-tools select { padding: 3px 8px; border: 1px solid var(--border); border-radius: 6px; background: #fff; }
+.fl-nav button, .fl-tools button { padding: 3px 12px; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--accent); }
+.fl-nav button:disabled { color: #d1d5db; }
+.fl-chapters { margin: 0 0 8px; font-size: 0.875rem; }
+.fl-chapters > summary { cursor: pointer; color: var(--accent); }
+.fl-chapters-note { margin: 6px 0; font-size: 0.75rem; color: var(--muted); }
+.fl-chapters ol { margin: 0; padding: 8px 12px; list-style: none; columns: 2 24em; border: 1px solid var(--border); border-radius: 8px; background: var(--card-bg); }
+.fl-chapters li { break-inside: avoid; padding: 1px 0; }
+.fl-chapters li button { color: var(--accent); text-align: left; }
+.fl-chapters li button.is-current { color: var(--ink); font-weight: 700; }
+.fl-mark { display: inline-block; min-width: 1.6em; margin-left: 4px; padding: 0 5px; border-radius: 9999px; font-size: 0.6875rem; line-height: 1.5; text-align: center; }
+.fl-mark-new { background: #dcfce7; color: #166534; }
+.fl-mark-end { background: #fee2e2; color: #991b1b; }
+.fl-mark-ms { background: #f3e8ff; color: #6b21a8; }
+.fl-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0 0 10px; font-size: 0.75rem; color: var(--muted); }
+.fl-key { display: inline-flex; align-items: center; gap: 4px; }
+.fl-key i { display: inline-block; width: 14px; height: 10px; border: 1px solid #d1d5db; border-radius: 3px; background: #fff; }
+.fl-key.st-new i { background: #dcfce7; border-color: #16a34a; }
+.fl-key.st-same i { border-color: #e5e7eb; }
+.fl-key.st-changed i { background: #dbeafe; border-color: #2563eb; }
+.fl-key.st-merge i, .fl-key.st-split i { background: #f3e8ff; border-color: #7c3aed; }
+.fl-key.st-deleted i { background: #fee2e2; border-color: #dc2626; }
+.fl-key.st-end i { border: 1px dashed #dc2626; }
+.fl-scroll { overflow: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--card-bg); }
+/* 流れ図は枠の中で送り、列の見出しを枠の上端に固定する */
+#fl-svg { position: relative; max-height: calc(100vh - 230px); min-height: 360px; }
+.fl-head { position: sticky; top: 0; z-index: 2; height: 32px; background: #f9fafb; border-bottom: 1px solid var(--border); }
+.fl-head span { position: absolute; top: 7px; font-size: 13.5px; font-weight: 700; color: #374151; text-align: center; }
+.fl-svg .fl-band { fill: #eef2ff; }
+.fl-svg .fl-band-text { font-size: 14.5px; font-weight: 700; fill: #3730a3; }
+.fl-svg { display: block; font-family: inherit; }
+.fl-svg .fl-colhead { font-size: 12px; font-weight: 700; fill: #374151; }
+.fl-svg .fl-stripe { fill: #f8fafc; }
+.fl-svg text { font-size: 13.5px; fill: var(--ink); pointer-events: none; }
+.fl-svg .fl-box { fill: #fff; stroke: #d1d5db; }
+.fl-svg a .fl-node { cursor: pointer; }
+.fl-svg a:hover .fl-box, .fl-svg a:focus .fl-box { stroke-width: 2.5; }
+.fl-svg .st-new .fl-box { fill: #dcfce7; stroke: #16a34a; }
+.fl-svg .st-same text { fill: #6b7280; }
+.fl-svg .st-changed .fl-box { fill: #dbeafe; stroke: #2563eb; }
+.fl-svg .st-merge .fl-box, .fl-svg .st-split .fl-box { fill: #f3e8ff; stroke: #7c3aed; }
+.fl-svg .st-deleted .fl-box { fill: #fee2e2; stroke: #dc2626; }
+.fl-svg .st-end .fl-box { fill: #fff; stroke: #dc2626; stroke-dasharray: 3 2; }
+.fl-svg .st-end text { fill: #b91c1c; }
+.fl-svg .fl-edge { fill: none; stroke: #94a3b8; stroke-width: 1.5; }
+.fl-svg .fl-edge-ms { stroke: #7c3aed; }
+.fl-svg .fl-edge-end { stroke: #dc2626; stroke-dasharray: 4 3; }
+
+/* 対照表：色は控えめに（背景の色は新設・削除・続きなしだけ。文言の変更・統合・分割は文字の色） */
+.tb-scroll { max-height: calc(100vh - 160px); }
+.tb-table { min-width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.875rem; }
+.tb-table th, .tb-table td { padding: 3px 6px; border-bottom: 1px solid #f3f4f6; text-align: left; vertical-align: top; }
+.tb-table thead th { position: sticky; top: 0; z-index: 2; background: #f9fafb; border-bottom: 1px solid var(--border); white-space: nowrap; color: #374151; }
+.tb-table td:first-child, .tb-table thead th:first-child { position: sticky; left: 0; z-index: 1; background: #fff; border-right: 1px solid var(--border); }
+.tb-table thead th:first-child { z-index: 3; background: #f9fafb; }
+.tb-table .tb-group th { padding: 0; background: #f9fafb; border-bottom: 1px solid var(--border); }
+.tb-group button { width: 100%; padding: 6px 8px; text-align: left; font-weight: 700; color: #374151; }
+.tb-group button::before { content: "▾ "; color: #9ca3af; }
+.tb-group button[aria-expanded="false"]::before { content: "▸ "; }
+.tb-group small { margin-left: 8px; font-weight: 400; color: var(--muted); }
+.tb-n { padding: 0 3px; border-radius: 3px; color: var(--ink); white-space: nowrap; }
+a.tb-n { text-decoration: none; }
+a.tb-n:hover { text-decoration: underline; }
+.tb-n.st-same { color: #9ca3af; }
+.tb-n.st-changed { color: #1d4ed8; }
+.tb-n.st-merge, .tb-n.st-split { color: #7e22ce; }
+.tb-n.st-new { background: #ecfdf5; color: #166534; }
+.tb-n.st-deleted { background: #fef2f2; color: #b91c1c; }
+.tb-n.st-end { color: #b91c1c; font-size: 0.8125rem; }
+.tb-n.st-unknown { color: #6b7280; }
+.tb-sep { margin: 0 2px; color: #d1d5db; }
+
+/* 草案の全文（draft/）：法令の表示と同じ class に、参照・修正案の文言・修正後の条文を加える */
+.law-text .Note { padding-left: 1em; color: var(--muted); font-size: 0.8125rem; line-height: 1.7; }
+.law-text .AmendProvision { margin: 0.8em 0; }
+.law-text .AmendProvisionSentence { font-weight: 500; }
+.law-text .NewProvision { margin-left: 1em; }
+.law-text .Amended { margin: 0.8em 0 1.2em; padding: 6px 12px; border-left: 4px solid #d1d5db; background: #f9fafb; border-radius: 4px; }
+.law-text .Amended-label { margin: 0 0 4px; color: var(--muted); font-size: 0.75rem; }
+.lin-full { margin-left: auto; font-size: 0.75rem; color: var(--accent); text-decoration: none; white-space: nowrap; }
+.lin-full:hover { text-decoration: underline; }
+
+/* 段階ごとの表示の前後のボタン：画面の縦の真ん中の左右に常に置く（本文の幅の外側。狭い画面では端に重ねる） */
+.lin-arrow { display: none; position: fixed; top: 50%; z-index: 30; flex-direction: column; align-items: center; gap: 4px; transform: translateY(-50%); padding: 0; border: 0; background: none; color: var(--accent); }
+.lin-steps[data-view="step"] .lin-arrow { display: flex; }
+.lin-arrow-prev { left: max(4px, calc(50% - 24rem - 72px)); }
+.lin-arrow-next { right: max(4px, calc(50% - 24rem - 72px)); }
+.lin-arrow-text { font-size: 0.6875rem; white-space: nowrap; padding: 0 4px; border-radius: 4px; background: rgba(249, 250, 251, 0.92); }
+.lin-arrow-icon { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--border); border-radius: 9999px; background: rgba(255, 255, 255, 0.92); font-size: 1.125rem; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12); }
+.lin-arrow:hover:not(:disabled) .lin-arrow-icon { background: var(--accent-soft); }
+.lin-arrow:disabled { color: #d1d5db; cursor: default; opacity: 0.6; }
+.lin-arrow:disabled .lin-arrow-icon { box-shadow: none; }
+
 @media (max-width: 640px) {
   .sp { grid-template-columns: 1fr; }
   .m-opening .m-list, .m-closing .m-list { max-width: calc(100% - 1em); margin-right: 1em; }
