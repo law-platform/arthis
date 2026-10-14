@@ -645,7 +645,6 @@ a.tb-n:hover { text-decoration: underline; }
 /* 成立しなかった条：題名の印、段階の一覧の最後の「続きなし」「削除」、最後の段階の注記、本文の頁の下の一覧 */
 .lin-ended-badge { display: inline-block; margin-left: 10px; padding: 0 10px; border-radius: 9999px; background: #fee2e2; color: #991b1b; font-size: 0.8125rem; font-weight: 500; vertical-align: middle; }
 .lin-step-end span { padding: 2px 8px; border: 1px dashed #dc2626; border-radius: 6px; color: #b91c1c; font-size: 0.75rem; }
-.lin-end-note { margin: 8px 0 0; color: #b91c1c; font-size: 0.875rem; }
 .lin-ended-list { margin: 0 0 16px; padding: 20px 24px; border: 1px solid var(--border); border-radius: 8px; background: var(--card-bg); }
 .lin-ended-list h2 { margin: 0 0 6px; font-size: 1.0625rem; font-weight: 700; }
 .lin-ended-list h2 small { margin-left: 8px; font-weight: 400; font-size: 0.8125rem; color: var(--muted); }
