@@ -639,8 +639,22 @@ a.tb-n:hover { text-decoration: underline; }
 .law-text .NewProvision { margin-left: 1em; }
 .law-text .Amended { margin: 0.8em 0 1.2em; padding: 6px 12px; border-left: 4px solid #d1d5db; background: #f9fafb; border-radius: 4px; }
 .law-text .Amended-label { margin: 0 0 4px; color: var(--muted); font-size: 0.75rem; }
-.lin-full { margin-left: auto; font-size: 0.75rem; color: var(--accent); text-decoration: none; white-space: nowrap; }
-.lin-full:hover { text-decoration: underline; }
+.lin-mat-links a { color: var(--accent); text-decoration: none; }
+.lin-mat-links a:hover { text-decoration: underline; }
+
+/* 成立しなかった条：題名の印、段階の一覧の最後の「続きなし」「削除」、最後の段階の注記、本文の頁の下の一覧 */
+.lin-ended-badge { display: inline-block; margin-left: 10px; padding: 0 10px; border-radius: 9999px; background: #fee2e2; color: #991b1b; font-size: 0.8125rem; font-weight: 500; vertical-align: middle; }
+.lin-step-end span { padding: 2px 8px; border: 1px dashed #dc2626; border-radius: 6px; color: #b91c1c; font-size: 0.75rem; }
+.lin-end-note { margin: 8px 0 0; color: #b91c1c; font-size: 0.875rem; }
+.lin-ended-list { margin: 0 0 16px; padding: 20px 24px; border: 1px solid var(--border); border-radius: 8px; background: var(--card-bg); }
+.lin-ended-list h2 { margin: 0 0 6px; font-size: 1.0625rem; font-weight: 700; }
+.lin-ended-list h2 small { margin-left: 8px; font-weight: 400; font-size: 0.8125rem; color: var(--muted); }
+.lin-ended-list p { margin: 0 0 10px; font-size: 0.875rem; color: var(--muted); }
+.lin-ended-list ul { margin: 0; padding: 0; list-style: none; columns: 2 22em; font-size: 0.875rem; }
+.lin-ended-list li { break-inside: avoid; padding: 2px 0; }
+.lin-ended-list a { color: var(--accent); text-decoration: none; }
+.lin-ended-list a:hover { text-decoration: underline; }
+.lin-ended-kind { margin-left: 8px; color: #b91c1c; font-size: 0.75rem; }
 
 /* 段階ごとの表示の前後のボタン：画面の縦の真ん中の左右に常に置く（本文の幅の外側。狭い画面では端に重ねる） */
 .lin-arrow { display: none; position: fixed; top: 50%; z-index: 30; flex-direction: column; align-items: center; gap: 4px; transform: translateY(-50%); padding: 0; border: 0; background: none; color: var(--accent); }
