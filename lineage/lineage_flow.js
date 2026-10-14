@@ -1,11 +1,11 @@
 // 条文の沿革の全体像を描く。データは <法令ID>_flow.js の window.LINEAGE_FLOW
 //   (convert_lineage_to_html.ps1 → lineage_flow.ps1 が書き出す)
-//   2 つの表示をタブ (フロー・テーブル) で切り替える
-//     流れ図 (既定): 編・章を 1 つ選び、各段階 (列) の条を箱で並べて、前の段階の条から線を引く。続きのない条は「続きなし」へ赤の点線
-//     対照表: 法律全体を、行 = 対応でつながる条のまとまり、列 = 会議体の表にする。編・章ごとに折りたためる
+//   #flow の data-view で描くものを選ぶ (タブ「フロー・テーブル・条文」は頁ごとのリンク。flow.html・table.html・index.html)
+//     フロー (flow): 編・章を 1 つ選び、各段階 (列) の条を箱で並べて、前の段階の条から線を引く。続きのない条は「続きなし」へ赤の点線
+//     テーブル (table): 法律全体を、行 = 対応でつながる条のまとまり、列 = 会議体の表にする。編・章ごとに折りたためる
 //   条 (箱・表の条) を押すと、その条の沿革のページのその段階へ移る。成立しなかった条は、その段階の全文 (草案のページ・議事録) へ移る
 //   条にマウスを置くと、段階・状態・成立法の何条になったか・条文を出す
-//   #g=3 (流れ図のその章の位置)・#v=table (対照表) のようなリンクで開ける
+//   フローは #g=3 (その章の位置) のようなリンクで開ける
 //   条 (node): i 番号, c 列, a 条, g 原案の列の段階の印 (甲11 など), s 状態, p 前の段階の条の番号, e 続きなしを置く列 (-1 はなし),
 //     h 沿革のページの段階へのリンク, t 条文
 (() => {
@@ -40,9 +40,6 @@
   const legend = `<div class="fl-legend">${['orig', 'new', 'same', 'changed', 'merge', 'split', 'deleted', 'end'].map(s => `<span class="fl-key st-${s}"><i></i>${STATUS[s]}</span>`).join('')}</div>`;
 
   root.innerHTML = `
-    <div class="fl-tabs" role="tablist">
-      <button type="button" role="tab" data-view="flow">フロー</button><button type="button" role="tab" data-view="table">テーブル</button>
-    </div>
     <div class="fl-view" data-view="flow">
       <div class="fl-nav">
         <button type="button" data-go="-1">◁ 前の章</button>
@@ -61,7 +58,7 @@
   const tableView = root.querySelector('.fl-view[data-view="table"]');
   const select = flowView.querySelector('select');
   const svgBox = flowView.querySelector('#fl-svg');
-  const state = { view: 'flow', g: 0 };
+  const state = { view: root.dataset.view === 'table' ? 'table' : 'flow', g: 0 };
 
   // --- 流れ図 ----------------------------------------------------------------
   // 法律全体を 1 枚の図にし、章の切れ目に見出しの帯を置く。列の見出しは枠の上端に固定 (HTML の .fl-head)
@@ -196,15 +193,12 @@
     draw();
   }
 
-  // --- 表示の切り替え ---------------------------------------------------------------
+  // --- 描く ---------------------------------------------------------------------
   function render() {
-    root.querySelectorAll('.fl-tabs [data-view]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.view === state.view)));
     flowView.hidden = state.view !== 'flow';
     tableView.hidden = state.view !== 'table';
-    if (state.view === 'flow') { drawFlow(); goChapter(state.g); }
-    else { drawTable(); history.replaceState(null, '', '#v=table'); }
+    if (state.view === 'flow') { drawFlow(); goChapter(state.g); } else drawTable();
   }
-  root.querySelectorAll('.fl-tabs [data-view]').forEach(b => b.addEventListener('click', () => { state.view = b.dataset.view; render(); }));
   flowView.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => goChapter(state.g + +b.dataset.go)));
   select.addEventListener('change', () => goChapter(+select.value));
   flowView.querySelector('.fl-chapters').addEventListener('click', e => {
@@ -213,7 +207,6 @@
   });
 
   const mg = location.hash.match(/^#g=(\d+)$/);
-  if (location.hash === '#v=table') state.view = 'table';
   if (mg) state.g = Math.min(groups.length - 1, +mg[1]);
   render();
 })();
