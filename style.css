@@ -516,6 +516,8 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .lin-steps.no-diff .lin-diff-note { display: none; }
 
 /* 成立した法律の本文（lineage/index.html）。class は法令標準 XML の要素名（jahis の法令ページと同じ） */
+/* 条文の頁は、タブの位置をフロー・テーブルとそろえるため広い枠にし、本文の枠は読みやすい幅にとどめる */
+.law-text, .lin-ended-list { max-width: 52rem; }
 .law-text { padding: 24px; margin-bottom: 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--card-bg); box-shadow: var(--shadow); line-height: 1.9; }
 .law-src { color: var(--accent); text-decoration: none; }
 .law-src:hover { text-decoration: underline; }
@@ -557,8 +559,8 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 
 /* 沿革の全体像（lineage/<法令ID>_flow.html）。描くのは lineage_flow.js。流れ図と対照表をタブで切り替える */
 .fl-tabs { display: flex; gap: 4px; margin: 0 0 12px; border-bottom: 1px solid var(--border); }
-.fl-tabs button { padding: 6px 16px; border: 1px solid transparent; border-bottom: 0; border-radius: 8px 8px 0 0; color: var(--accent); font-size: 0.875rem; }
-.fl-tabs button[aria-selected="true"] { margin-bottom: -1px; border-color: var(--border); background: var(--card-bg); color: var(--ink); font-weight: 700; }
+.fl-tabs button, .fl-tabs a { padding: 6px 16px; text-decoration: none; border: 1px solid transparent; border-bottom: 0; border-radius: 8px 8px 0 0; color: var(--accent); font-size: 0.875rem; }
+.fl-tabs [aria-selected="true"] { margin-bottom: -1px; border-color: var(--border); background: var(--card-bg); color: var(--ink); font-weight: 700; }
 .fl-nav, .fl-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 8px; font-size: 0.875rem; }
 .fl-nav select, .fl-tools select { padding: 3px 8px; border: 1px solid var(--border); border-radius: 6px; background: #fff; }
 .fl-nav button, .fl-tools button { padding: 3px 12px; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--accent); }
@@ -645,7 +647,6 @@ a.tb-n:hover { text-decoration: underline; }
 /* 成立しなかった条：題名の印、段階の一覧の最後の「続きなし」「削除」、最後の段階の注記、本文の頁の下の一覧 */
 .lin-ended-badge { display: inline-block; margin-left: 10px; padding: 0 10px; border-radius: 9999px; background: #fee2e2; color: #991b1b; font-size: 0.8125rem; font-weight: 500; vertical-align: middle; }
 .lin-step-end span { padding: 2px 8px; border: 1px dashed #dc2626; border-radius: 6px; color: #b91c1c; font-size: 0.75rem; }
-.lin-end-note { margin: 8px 0 0; color: #b91c1c; font-size: 0.875rem; }
 .lin-ended-list { margin: 0 0 16px; padding: 20px 24px; border: 1px solid var(--border); border-radius: 8px; background: var(--card-bg); }
 .lin-ended-list h2 { margin: 0 0 6px; font-size: 1.0625rem; font-weight: 700; }
 .lin-ended-list h2 small { margin-left: 8px; font-weight: 400; font-size: 0.8125rem; color: var(--muted); }
