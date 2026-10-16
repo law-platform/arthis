@@ -80,7 +80,8 @@
   // --- 流れ図 ----------------------------------------------------------------
   // 法律全体を 1 枚の図にし、章の切れ目に見出しの帯を置く。列の見出しは枠の上端に固定 (HTML の .fl-head)
   //   章の選択・◁ ▷・章の一覧は、その章の帯の位置へ図を送る。図を送ると、選択欄は今いる章になる
-  const CW = 140, BW = 112, BH = 22, GAP = 4, PAD = 8, BAND = 32;
+  // STEP: 同じ列の中で前の案と続く案 (原案→修正案) の間に足す隙間。そこに下向きの矢印を引く
+  const CW = 140, BW = 112, BH = 22, GAP = 4, STEP = 10, PAD = 8, BAND = 32;
   const bands = [];
   function drawFlow() {
     if (svgBox.dataset.ready) return;
@@ -92,10 +93,18 @@
       bands.push(y);
       y += BAND;
       g.rows.forEach(r => {
-        const counts = cols.map((_, ci) => r.nodes.filter(n => n.c === ci).length);
-        const h = Math.max(1, ...counts) * (BH + GAP) + PAD;
+        // 列ごとに上から積む。段が変わる (前の案から続く案になる) ところは STEP だけ空ける
+        const heights = cols.map((_, ci) => {
+          let dy = 0;
+          inCol(r, ci).forEach((n, k, ns) => {
+            if (k && level(n) > level(ns[k - 1])) dy += STEP;
+            pos.set(n.i, { x: PAD + ci * CW, y: y + PAD / 2 + dy });
+            dy += BH + GAP;
+          });
+          return dy;
+        });
+        const h = Math.max(BH + GAP, ...heights) + PAD;
         rowsY.set(r, [y, h]);
-        cols.forEach((_, ci) => inCol(r, ci).forEach((n, k) => pos.set(n.i, { x: PAD + ci * CW, y: y + PAD / 2 + k * (BH + GAP) })));
         y += h;
       });
     });
@@ -113,10 +122,10 @@
       n.p.forEach(pi => {
         const a = pos.get(pi);
         if (!a) return;
-        // 同じ列の前の案から: 箱の左の外側に縦のつなぎ線 (上の案の左から出て、下の案の左へ矢印)
+        // 同じ列の前の案から: 上の案の下端の中ほどから、下の案の上端へ下向きの矢印
         if (byId.get(pi).c === n.c) {
-          const xl = b.x - 7;
-          svg += `<path class="fl-edge fl-edge-col" d="M${a.x},${a.y + BH / 2} H${xl} V${b.y + BH / 2} H${b.x - 1}" marker-end="url(#fl-arrow)"/>`;
+          const cx = b.x + BW / 2;
+          svg += `<path class="fl-edge fl-edge-col" d="M${cx},${a.y + BH} V${b.y - 1}" marker-end="url(#fl-arrow)"/>`;
           return;
         }
         const x1 = a.x + BW, y1 = a.y + BH / 2, x2 = b.x, y2 = b.y + BH / 2, mx = (x1 + x2) / 2;

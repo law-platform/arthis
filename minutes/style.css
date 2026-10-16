@@ -613,7 +613,7 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .fl-svg .fl-ended .fl-box { stroke: #dc2626; stroke-width: 1.5; }
 .fl-svg .fl-ended .fl-x { font-size: 15px; font-weight: 700; fill: #dc2626; }.fl-svg .fl-edge { fill: none; stroke: #94a3b8; stroke-width: 1.5; }
 .fl-svg .fl-edge-ms { stroke: #7c3aed; }
-/* 同じ列の中のつなぎ線 (原案→修正案など): 箱の左の外側を縦に通る */
+/* 同じ列の中のつなぎ線 (原案→修正案など): 上の案から下の案へ下向きの矢印 */
 .fl-svg .fl-edge-col { stroke: #475569; stroke-width: 1.5; }
 .fl-svg .fl-arrow { fill: #475569; }
 
