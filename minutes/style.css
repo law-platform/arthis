@@ -584,12 +584,17 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .fl-key.st-changed i { background: #dbeafe; border-color: #2563eb; }
 .fl-key.st-merge i, .fl-key.st-split i { background: #f3e8ff; border-color: #7c3aed; }
 .fl-key.st-deleted i { background: #fee2e2; border-color: #dc2626; }
-.fl-key.st-end i { border: 1px dashed #dc2626; }
+.fl-key.st-end b { color: #dc2626; font-weight: 700; }
 .fl-scroll { overflow: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--card-bg); }
 /* 流れ図は枠の中で送り、列の見出しを枠の上端に固定する */
 #fl-svg { position: relative; max-height: calc(100vh - 230px); min-height: 360px; }
 .fl-head { position: sticky; top: 0; z-index: 2; height: 32px; background: #f9fafb; border-bottom: 1px solid var(--border); }
 .fl-head span { position: absolute; top: 7px; font-size: 13.5px; font-weight: 700; color: #374151; text-align: center; }
+/* 列の組 (法典調査会) のある見出しは 2 段: 上に組の名前 (その列の幅にわたる線の上)、下に列の名前。組のない列は 2 段の中ほど */
+.fl-head-2 { height: 54px; }
+.fl-head-2 .fl-group { top: 4px; padding-bottom: 2px; border-bottom: 1px solid #9ca3af; font-size: 12.5px; color: #4b5563; }
+.fl-head-2 .fl-col-sub { top: 29px; }
+.fl-head-2 .fl-col:not(.fl-col-sub) { top: 17px; }
 .fl-svg .fl-band { fill: #eef2ff; }
 .fl-svg .fl-band-text { font-size: 14.5px; font-weight: 700; fill: #3730a3; }
 .fl-svg { display: block; font-family: inherit; }
@@ -604,19 +609,25 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .fl-svg .st-changed .fl-box { fill: #dbeafe; stroke: #2563eb; }
 .fl-svg .st-merge .fl-box, .fl-svg .st-split .fl-box { fill: #f3e8ff; stroke: #7c3aed; }
 .fl-svg .st-deleted .fl-box { fill: #fee2e2; stroke: #dc2626; }
-.fl-svg .st-end .fl-box { fill: #fff; stroke: #dc2626; stroke-dasharray: 3 2; }
-.fl-svg .st-end text { fill: #b91c1c; }
-.fl-svg .fl-edge { fill: none; stroke: #94a3b8; stroke-width: 1.5; }
+/* その段階で廃案になった条: 状態の色はそのまま、枠を赤にし、箱の右に ✕ */
+.fl-svg .fl-ended .fl-box { stroke: #dc2626; stroke-width: 1.5; }
+.fl-svg .fl-ended .fl-x { font-size: 15px; font-weight: 700; fill: #dc2626; }.fl-svg .fl-edge { fill: none; stroke: #94a3b8; stroke-width: 1.5; }
 .fl-svg .fl-edge-ms { stroke: #7c3aed; }
-.fl-svg .fl-edge-end { stroke: #dc2626; stroke-dasharray: 4 3; }
+/* 同じ列の中のつなぎ線 (原案→修正案など): 箱の左の外側を縦に通る */
+.fl-svg .fl-edge-col { stroke: #475569; stroke-width: 1.5; }
+.fl-svg .fl-arrow { fill: #475569; }
 
-/* 対照表：色は控えめに（背景の色は新設・削除・続きなしだけ。文言の変更・統合・分割は文字の色） */
+/* 対照表：色は控えめに（背景の色は新設・削除だけ。廃案は条の後の赤の ✕。修正あり・統合・分割は文字の色） */
 .tb-scroll { max-height: calc(100vh - 160px); }
 .tb-table { min-width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.875rem; }
 .tb-table th, .tb-table td { padding: 3px 6px; border-bottom: 1px solid #f3f4f6; text-align: left; vertical-align: top; }
 .tb-table thead th { position: sticky; top: 0; z-index: 2; background: #f9fafb; border-bottom: 1px solid var(--border); white-space: nowrap; color: #374151; }
 .tb-table td:first-child, .tb-table thead th:first-child { position: sticky; left: 0; z-index: 1; background: #fff; border-right: 1px solid var(--border); }
 .tb-table thead th:first-child { z-index: 3; background: #f9fafb; }
+/* 2 段の見出し: 上の段の組 (法典調査会) と、下の段 (上の段の高さだけ下に固定) */
+.tb-table thead th.tb-colgroup { text-align: center; font-size: 0.8125rem; color: #4b5563; }
+.tb-table thead th[rowspan] { vertical-align: middle; }
+.tb-table thead th.tb-sub { top: 27px; }
 .tb-table .tb-group th { padding: 0; background: #f9fafb; border-bottom: 1px solid var(--border); }
 .tb-group button { width: 100%; padding: 6px 8px; text-align: left; font-weight: 700; color: #374151; }
 .tb-group button::before { content: "▾ "; color: #9ca3af; }
@@ -630,7 +641,7 @@ a.tb-n:hover { text-decoration: underline; }
 .tb-n.st-merge, .tb-n.st-split { color: #7e22ce; }
 .tb-n.st-new { background: #ecfdf5; color: #166534; }
 .tb-n.st-deleted { background: #fef2f2; color: #b91c1c; }
-.tb-n.st-end { color: #b91c1c; font-size: 0.8125rem; }
+.tb-x { margin-left: 2px; color: #dc2626; font-weight: 700; }
 .tb-n.st-unknown { color: #6b7280; }
 .tb-sep { margin: 0 2px; color: #d1d5db; }
 

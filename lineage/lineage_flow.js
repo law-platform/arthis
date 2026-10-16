@@ -1,12 +1,12 @@
 // 条文の沿革の全体像を描く。データは <法令ID>_flow.js の window.LINEAGE_FLOW
 //   (convert_lineage_to_html.ps1 → lineage_flow.ps1 が書き出す)
 //   #flow の data-view で描くものを選ぶ (タブ「フロー・テーブル・条文」は頁ごとのリンク。flow.html・table.html・index.html)
-//     フロー (flow): 編・章を 1 つ選び、各段階 (列) の条を箱で並べて、前の段階の条から線を引く。続きのない条は「続きなし」へ赤の点線
+//     フロー (flow): 編・章を 1 つ選び、各段階 (列) の条を箱で並べて、前の段階の条から線を引く。その段階で廃案になった条 (続きのない条) は、箱の枠を赤にし、箱の右に ✕
 //     テーブル (table): 法律全体を、行 = 対応でつながる条のまとまり、列 = 会議体の表にする。編・章ごとに折りたためる
 //   条 (箱・表の条) を押すと、その条の沿革のページのその段階へ移る。成立しなかった条は、その段階の全文 (草案のページ・議事録) へ移る
 //   条にマウスを置くと、段階・状態・成立法の何条になったか・条文を出す
 //   フローは #g=3 (その章の位置) のようなリンクで開ける
-//   条 (node): i 番号, c 列, a 条, g 原案の列の段階の印 (甲11 など), s 状態, p 前の段階の条の番号, e 続きなしを置く列 (-1 はなし),
+//   条 (node): i 番号, c 列, a 条, g 原案の列の段階の印 (甲11 など), s 状態, p 前の段階の条の番号, e 続きのない次の列 (-1 は続きあり。0 以上ならその条の段階で廃案),
 //     h 沿革のページの段階へのリンク, t 条文
 (() => {
   const data = window.LINEAGE_FLOW;
@@ -16,8 +16,8 @@
   const byId = new Map();
   data.rows.forEach(r => r.nodes.forEach(n => { n.row = r; byId.set(n.i, n); }));
   const STATUS = {
-    orig: '原案', new: '新設', same: '変わらず', changed: '文言の変更', merge: '統合', split: '分割',
-    deleted: '削除', unknown: '比べられない', end: '続きなし'
+    orig: '原案', new: '新設', same: '修正なし', changed: '修正あり', merge: '統合', split: '分割',
+    deleted: '削除', unknown: '比べられない', end: '廃案'
   };
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const colName = c => cols[c].label.replace('法典調査会 ', '');
@@ -29,10 +29,19 @@
     const last = groupSpans[groupSpans.length - 1];
     if (last && last.group === c.group && last.to === ci - 1) last.to = ci; else groupSpans.push({ group: c.group, from: ci, to: ci });
   });
-  const label = n => n.a + (n.g ? `(${n.g})` : '') + (n.s === 'deleted' ? ' 削除' : '');
-  const tip = n => `${colFull(n.c)}　${label(n)}　［${STATUS[n.s]}］　${n.row.final ? '成立法 ' + n.row.final : '成立せず'}` + (n.t ? '\n' + n.t : '');
+  // 同じ列の中の何段目か (法典調査会の原案→修正案): 同じ列の前の案から続く条は、その案の次の段
+  const levels = new Map();
+  const level = n => {
+    if (!levels.has(n.i)) levels.set(n.i, Math.max(-1, ...n.p.map(pi => byId.get(pi)).filter(m => m && m.c === n.c).map(level)) + 1);
+    return levels.get(n.i);
+  };
+  // 列の中の条を、前の案が上・後の案が下になるように並べる (同じ段はデータの順)
+  const inCol = (r, ci) => r.nodes.filter(n => n.c === ci).sort((a, b) => level(a) - level(b));
+  // 条の名前。削除の条は赤で示し、「削除」とは書かない (マウスを置くと出る)
+  const label = n => n.a + (n.g ? `(${n.g})` : '');
+  const tip = n => `${colFull(n.c)}　${label(n)}　［${STATUS[n.s]}］${n.e >= 0 ? '　✕ この段階で廃案' : ''}　${n.row.final ? '成立法 ' + n.row.final : '成立せず'}` + (n.t ? '\n' + n.t : '');
 
-  // 編・章のまとまりと、その中の新設・削除・続きなし・統合や分割の数
+  // 編・章のまとまりと、その中の新設・削除・廃案・統合や分割の数
   const groups = [];
   data.rows.forEach(r => { if (!groups.length || groups[groups.length - 1].label !== r.group) groups.push({ label: r.group, rows: [] }); groups[groups.length - 1].rows.push(r); });
   groups.forEach(g => {
@@ -43,9 +52,9 @@
       ms: ns.filter(n => n.s === 'merge' || n.s === 'split').length
     };
   });
-  const marks = g => [['new', '新設'], ['end', '削除・続きなし'], ['ms', '統合・分割']]
+  const marks = g => [['new', '新設'], ['end', '削除・廃案'], ['ms', '統合・分割']]
     .filter(([k]) => g.count[k]).map(([k, t]) => `<span class="fl-mark fl-mark-${k}" title="${t} ${g.count[k]}">${g.count[k]}</span>`).join('');
-  const legend = `<div class="fl-legend">${['orig', 'new', 'same', 'changed', 'merge', 'split', 'deleted', 'end'].map(s => `<span class="fl-key st-${s}"><i></i>${STATUS[s]}</span>`).join('')}</div>`;
+  const legend = `<div class="fl-legend">${['orig', 'new', 'same', 'changed', 'merge', 'split', 'deleted'].map(s => `<span class="fl-key st-${s}"><i></i>${STATUS[s]}</span>`).join('')}<span class="fl-key st-end"><b>✕</b>この段階で廃案</span></div>`;
 
   root.innerHTML = `
     <div class="fl-view" data-view="flow">
@@ -55,7 +64,7 @@
         <button type="button" data-go="1">次の章 ▷</button>
       </div>
       <details class="fl-chapters"><summary>章の一覧</summary>
-        <p class="fl-chapters-note">数字は、<span class="fl-mark fl-mark-new">新設</span><span class="fl-mark fl-mark-end">削除・続きなし</span><span class="fl-mark fl-mark-ms">統合・分割</span>の条の数</p>
+        <p class="fl-chapters-note">数字は、<span class="fl-mark fl-mark-new">新設</span><span class="fl-mark fl-mark-end">削除・廃案</span><span class="fl-mark fl-mark-ms">統合・分割</span>の条の数</p>
         <ol>${groups.map((g, i) => `<li><button type="button" data-g="${i}">${esc(g.label)}</button>${marks(g)}</li>`).join('')}</ol>
       </details>
       ${legend}
@@ -83,15 +92,16 @@
       bands.push(y);
       y += BAND;
       g.rows.forEach(r => {
-        const counts = cols.map((_, ci) => r.nodes.filter(n => n.c === ci).length + (r.nodes.some(n => n.e === ci) ? 1 : 0));
+        const counts = cols.map((_, ci) => r.nodes.filter(n => n.c === ci).length);
         const h = Math.max(1, ...counts) * (BH + GAP) + PAD;
         rowsY.set(r, [y, h]);
-        cols.forEach((_, ci) => r.nodes.filter(n => n.c === ci).forEach((n, k) => pos.set(n.i, { x: PAD + ci * CW, y: y + PAD / 2 + k * (BH + GAP) })));
+        cols.forEach((_, ci) => inCol(r, ci).forEach((n, k) => pos.set(n.i, { x: PAD + ci * CW, y: y + PAD / 2 + k * (BH + GAP) })));
         y += h;
       });
     });
     const W = PAD * 2 + cols.length * CW, H = y + PAD;
-    let svg = `<svg class="fl-svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+    let svg = `<svg class="fl-svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`
+      + '<defs><marker id="fl-arrow" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L6,3 L0,6 z" class="fl-arrow"/></marker></defs>';
     let k = 0;
     rowsY.forEach(([ry, rh]) => { if (k++ % 2) svg += `<rect class="fl-stripe" x="0" y="${ry}" width="${W}" height="${rh}"/>`; });
     groups.forEach((g, gi) => {
@@ -103,16 +113,19 @@
       n.p.forEach(pi => {
         const a = pos.get(pi);
         if (!a) return;
+        // 同じ列の前の案から: 箱の左の外側に縦のつなぎ線 (上の案の左から出て、下の案の左へ矢印)
+        if (byId.get(pi).c === n.c) {
+          const xl = b.x - 7;
+          svg += `<path class="fl-edge fl-edge-col" d="M${a.x},${a.y + BH / 2} H${xl} V${b.y + BH / 2} H${b.x - 1}" marker-end="url(#fl-arrow)"/>`;
+          return;
+        }
         const x1 = a.x + BW, y1 = a.y + BH / 2, x2 = b.x, y2 = b.y + BH / 2, mx = (x1 + x2) / 2;
         svg += `<path class="fl-edge${n.s === 'merge' || n.s === 'split' ? ' fl-edge-ms' : ''}" d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}"/>`;
       });
-      if (n.e >= 0) {
-        const kk = r.nodes.filter(m => m.c === n.e).length;
-        const ex = PAD + n.e * CW, ey = rowsY.get(r)[0] + PAD / 2 + kk * (BH + GAP);
-        svg += `<path class="fl-edge fl-edge-end" d="M${b.x + BW},${b.y + BH / 2} L${ex},${ey + BH / 2}"/>`;
-        boxes += `<g class="st-end"><rect class="fl-box" x="${ex}" y="${ey}" width="${BW}" height="${BH}" rx="4"/><text x="${ex + BW / 2}" y="${ey + 16}" text-anchor="middle">✕ 続きなし</text></g>`;
-      }
-      const box = `<g class="fl-node st-${n.s}"><title>${esc(tip(n))}</title><rect class="fl-box" x="${b.x}" y="${b.y}" width="${BW}" height="${BH}" rx="4"/><text x="${b.x + BW / 2}" y="${b.y + 16}" text-anchor="middle">${esc(label(n))}</text></g>`;
+      // その段階で廃案になった条: 箱の枠を赤にし、箱の右 (次の列との間) に ✕
+      const ended = n.e >= 0;
+      const box = `<g class="fl-node st-${n.s}${ended ? ' fl-ended' : ''}"><title>${esc(tip(n))}</title><rect class="fl-box" x="${b.x}" y="${b.y}" width="${BW}" height="${BH}" rx="4"/><text x="${b.x + BW / 2}" y="${b.y + 16}" text-anchor="middle">${esc(label(n))}</text>`
+        + (ended ? `<text class="fl-x" x="${b.x + BW + 4}" y="${b.y + 16}">✕</text>` : '') + '</g>';
       boxes += n.h ? `<a href="${esc(n.h)}">${box}</a>` : box;
     }));
     const head = `<div class="fl-head${groupSpans.length ? ' fl-head-2' : ''}" style="width:${W}px">`
@@ -165,13 +178,14 @@
       ended: ['成立しなかった条を含む行', r => ended(r) || has(r, n => n.s === 'deleted' || n.e >= 0)],
       new: ['新設を含む行', r => has(r, n => n.s === 'new')],
       ms: ['統合・分割を含む行', r => has(r, n => n.s === 'merge' || n.s === 'split')],
-      changed: ['文言の変更を含む行', r => has(r, n => n.s === 'changed')]
+      changed: ['修正ありを含む行', r => has(r, n => n.s === 'changed')]
     };
     tableView.innerHTML = `<div class="fl-tools"><label>表示する行 <select>${Object.entries(filters).map(([k, v]) => `<option value="${k}">${v[0]}</option>`).join('')}</select></label>
       <button type="button" class="tb-fold">章をすべて閉じる</button></div>${legend}
       <div class="fl-scroll tb-scroll"><table class="tb-table"><thead>${tableHead()}</thead><tbody></tbody></table></div>`;
     const body = tableView.querySelector('tbody');
-    const cell = n => n.h ? `<a class="tb-n st-${n.s}" href="${esc(n.h)}" title="${esc(tip(n))}">${esc(label(n))}</a>` : `<span class="tb-n st-${n.s}" title="${esc(tip(n))}">${esc(label(n))}</span>`;
+    const cell = n => (n.h ? `<a class="tb-n st-${n.s}" href="${esc(n.h)}" title="${esc(tip(n))}">${esc(label(n))}</a>` : `<span class="tb-n st-${n.s}" title="${esc(tip(n))}">${esc(label(n))}</span>`)
+      + (n.e >= 0 ? '<span class="tb-x" title="この段階で廃案">✕</span>' : '');
     const draw = () => {
       const f = filters[tableView.querySelector('select').value][1];
       let html = '';
@@ -182,16 +196,9 @@
         rows.forEach(r => {
           html += `<tr class="tb-row${ended(r) ? ' tb-ended' : ''}" data-g="${gi}">` + cols.map((c, ci) => {
             // 同じ列の中の移り変わり (法典調査会の原案→修正案): 並行するものは「・」、引き継ぎは ⇒
-            const ns = r.nodes.filter(n => n.c === ci);
-            const level = new Map();
-            const lv = n => {
-              if (!level.has(n.i)) level.set(n.i, Math.max(-1, ...n.p.map(pi => byId.get(pi)).filter(m => m && m.c === ci).map(lv)) + 1);
-              return level.get(n.i);
-            };
             const steps = [];
-            ns.forEach(n => (steps[lv(n)] ||= []).push(cell(n)));
+            inCol(r, ci).forEach(n => (steps[level(n)] ||= []).push(cell(n)));
             const parts = steps.filter(Boolean).map(a => a.join('<span class="tb-sep">・</span>'));
-            if (r.nodes.some(n => n.e === ci)) parts.push('<span class="tb-n st-end">続きなし</span>');
             return `<td>${parts.join('<span class="tb-sep">⇒</span>')}</td>`;
           }).join('') + '</tr>';
         });
