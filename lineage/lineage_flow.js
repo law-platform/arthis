@@ -21,8 +21,16 @@
   };
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const colName = c => cols[c].label.replace('法典調査会 ', '');
+  // 列の組 (法典調査会の中の主査会・総会・原案・決議案など)。続く列の同じ組を 1 つの見出しにまとめ、見出しを 2 段にする
+  const colFull = c => (cols[c].group ? cols[c].group + ' ' : '') + cols[c].label;
+  const groupSpans = [];
+  cols.forEach((c, ci) => {
+    if (!c.group) return;
+    const last = groupSpans[groupSpans.length - 1];
+    if (last && last.group === c.group && last.to === ci - 1) last.to = ci; else groupSpans.push({ group: c.group, from: ci, to: ci });
+  });
   const label = n => n.a + (n.g ? `(${n.g})` : '') + (n.s === 'deleted' ? ' 削除' : '');
-  const tip = n => `${cols[n.c].label}　${label(n)}　［${STATUS[n.s]}］　${n.row.final ? '成立法 ' + n.row.final : '成立せず'}` + (n.t ? '\n' + n.t : '');
+  const tip = n => `${colFull(n.c)}　${label(n)}　［${STATUS[n.s]}］　${n.row.final ? '成立法 ' + n.row.final : '成立せず'}` + (n.t ? '\n' + n.t : '');
 
   // 編・章のまとまりと、その中の新設・削除・続きなし・統合や分割の数
   const groups = [];
@@ -107,7 +115,9 @@
       const box = `<g class="fl-node st-${n.s}"><title>${esc(tip(n))}</title><rect class="fl-box" x="${b.x}" y="${b.y}" width="${BW}" height="${BH}" rx="4"/><text x="${b.x + BW / 2}" y="${b.y + 16}" text-anchor="middle">${esc(label(n))}</text></g>`;
       boxes += n.h ? `<a href="${esc(n.h)}">${box}</a>` : box;
     }));
-    const head = `<div class="fl-head" style="width:${W}px">${cols.map((c, ci) => `<span style="left:${PAD + ci * CW}px;width:${BW}px">${esc(colName(ci))}</span>`).join('')}</div>`;
+    const head = `<div class="fl-head${groupSpans.length ? ' fl-head-2' : ''}" style="width:${W}px">`
+      + groupSpans.map(s => `<span class="fl-group" style="left:${PAD + s.from * CW}px;width:${(s.to - s.from) * CW + BW}px">${esc(s.group)}</span>`).join('')
+      + cols.map((c, ci) => `<span class="fl-col${c.group ? ' fl-col-sub' : ''}" style="left:${PAD + ci * CW}px;width:${BW}px">${esc(colName(ci))}</span>`).join('') + '</div>';
     svgBox.innerHTML = head + svg + boxes + '</svg>';
   }
   // 今いる章 (図の上端にかかっている帯)
@@ -133,6 +143,18 @@
   svgBox.addEventListener('scroll', () => { const gi = chapterAt(); if (gi !== state.g) markChapter(gi); }, { passive: true });
 
   // --- 対照表 ----------------------------------------------------------------
+  // 見出し: 組のある列は 2 段 (上に組、下に列)、組のない列は 2 段をまたぐ
+  function tableHead() {
+    if (!groupSpans.length) return `<tr>${cols.map((c, ci) => `<th>${esc(colName(ci))}</th>`).join('')}</tr>`;
+    let top = '';
+    for (let ci = 0; ci < cols.length; ci++) {
+      const s = groupSpans.find(g => g.from === ci);
+      if (s) { top += `<th class="tb-colgroup" colspan="${s.to - s.from + 1}">${esc(s.group)}</th>`; ci = s.to; }
+      else top += `<th rowspan="2">${esc(colName(ci))}</th>`;
+    }
+    const sub = cols.map((c, ci) => c.group ? `<th class="tb-sub">${esc(colName(ci))}</th>` : '').join('');
+    return `<tr>${top}</tr><tr>${sub}</tr>`;
+  }
   function drawTable() {
     if (tableView.dataset.ready) return;
     tableView.dataset.ready = '1';
@@ -147,7 +169,7 @@
     };
     tableView.innerHTML = `<div class="fl-tools"><label>表示する行 <select>${Object.entries(filters).map(([k, v]) => `<option value="${k}">${v[0]}</option>`).join('')}</select></label>
       <button type="button" class="tb-fold">章をすべて閉じる</button></div>${legend}
-      <div class="fl-scroll tb-scroll"><table class="tb-table"><thead><tr>${cols.map((c, ci) => `<th>${esc(colName(ci))}</th>`).join('')}</tr></thead><tbody></tbody></table></div>`;
+      <div class="fl-scroll tb-scroll"><table class="tb-table"><thead>${tableHead()}</thead><tbody></tbody></table></div>`;
     const body = tableView.querySelector('tbody');
     const cell = n => n.h ? `<a class="tb-n st-${n.s}" href="${esc(n.h)}" title="${esc(tip(n))}">${esc(label(n))}</a>` : `<span class="tb-n st-${n.s}" title="${esc(tip(n))}">${esc(label(n))}</span>`;
     const draw = () => {

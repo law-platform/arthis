@@ -590,6 +590,11 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 #fl-svg { position: relative; max-height: calc(100vh - 230px); min-height: 360px; }
 .fl-head { position: sticky; top: 0; z-index: 2; height: 32px; background: #f9fafb; border-bottom: 1px solid var(--border); }
 .fl-head span { position: absolute; top: 7px; font-size: 13.5px; font-weight: 700; color: #374151; text-align: center; }
+/* 列の組 (法典調査会) のある見出しは 2 段: 上に組の名前 (その列の幅にわたる線の上)、下に列の名前。組のない列は 2 段の中ほど */
+.fl-head-2 { height: 54px; }
+.fl-head-2 .fl-group { top: 4px; padding-bottom: 2px; border-bottom: 1px solid #9ca3af; font-size: 12.5px; color: #4b5563; }
+.fl-head-2 .fl-col-sub { top: 29px; }
+.fl-head-2 .fl-col:not(.fl-col-sub) { top: 17px; }
 .fl-svg .fl-band { fill: #eef2ff; }
 .fl-svg .fl-band-text { font-size: 14.5px; font-weight: 700; fill: #3730a3; }
 .fl-svg { display: block; font-family: inherit; }
@@ -617,6 +622,10 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .tb-table thead th { position: sticky; top: 0; z-index: 2; background: #f9fafb; border-bottom: 1px solid var(--border); white-space: nowrap; color: #374151; }
 .tb-table td:first-child, .tb-table thead th:first-child { position: sticky; left: 0; z-index: 1; background: #fff; border-right: 1px solid var(--border); }
 .tb-table thead th:first-child { z-index: 3; background: #f9fafb; }
+/* 2 段の見出し: 上の段の組 (法典調査会) と、下の段 (上の段の高さだけ下に固定) */
+.tb-table thead th.tb-colgroup { text-align: center; font-size: 0.8125rem; color: #4b5563; }
+.tb-table thead th[rowspan] { vertical-align: middle; }
+.tb-table thead th.tb-sub { top: 27px; }
 .tb-table .tb-group th { padding: 0; background: #f9fafb; border-bottom: 1px solid var(--border); }
 .tb-group button { width: 100%; padding: 6px 8px; text-align: left; font-weight: 700; color: #374151; }
 .tb-group button::before { content: "▾ "; color: #9ca3af; }
