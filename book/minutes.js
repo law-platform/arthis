@@ -242,3 +242,15 @@
     history.go(-(depth + 1));
   });
 })();
+
+// 版のある巻の頁（書籍）：版の選択（.ed-select）で、その版の同じ条などを含む頁へ移る。検索語（?q=）は引き継ぐ
+(() => {
+  const sel = document.querySelector('.ed-select');
+  if (!sel) return;
+  sel.addEventListener('change', () => {
+    const url = new URL(sel.value, location.href);
+    const q = new URLSearchParams(location.search).get('q');
+    if (q) url.searchParams.set('q', q);
+    location.href = url;
+  });
+})();

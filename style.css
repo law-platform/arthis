@@ -242,6 +242,14 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .toc-list .current { font-weight: 700; }
 .toc-list .missing a { color: #9ca3af; }
 
+/* 版のある巻（book_index.json の editions）：各頁・沿革の資料の版の選択、一覧と検索結果の「ほかの版」 */
+.ed-switch, .lin-ed-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin: 8px 0 0; font-size: 0.875rem; color: var(--muted); }
+.ed-select { margin-left: 6px; padding: 2px 6px; font: inherit; color: var(--ink); background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; }
+.ed-note { color: #b45309; }
+.ed-others { margin: 6px 0 0; font-size: 0.8125rem; color: var(--muted); }
+.ed-others a { color: var(--accent); text-decoration: none; }
+.ed-others a:hover { text-decoration: underline; }
+
 /* ── 対訳・版の比較（book/*_pair_NN.html）：1 行 = 左右 2 つの欄。data-layout="alt" と狭い画面では交互（縦に並べる） ── */
 .pair-link { color: var(--accent); text-decoration: none; white-space: nowrap; }
 .pair-link:hover { text-decoration: underline; }

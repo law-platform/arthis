@@ -90,3 +90,15 @@
   setView(['step', 'all', 'text'].includes(view) ? view : 'step', false);
   if (steps.dataset.view !== 'step' && fromHash >= 0) sections[current].scrollIntoView();
 })();
+
+// 資料のうち版のある巻（民法要義の各版など）：版の選択で、出す版の本文と題名を切り替える
+document.querySelectorAll('.lin-ed-select').forEach((sel) => {
+  const box = sel.closest('.lin-mat');
+  const bodies = [...box.querySelectorAll('.lin-ed')];
+  sel.addEventListener('change', () => {
+    bodies.forEach((b, i) => { b.hidden = i !== sel.selectedIndex; });
+    const b = bodies[sel.selectedIndex];
+    box.querySelector('.lin-mat-title').textContent = b.dataset.title;
+    box.querySelector('.lin-mat-sub').textContent = b.dataset.sub;
+  });
+});

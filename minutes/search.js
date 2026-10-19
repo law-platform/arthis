@@ -193,7 +193,16 @@
     history.replaceState(null, '', p.toString() ? `?${p}` : location.pathname);
   }
 
-  async function search() {
+  // Google アナリティクスに検索語と件数を送る（Enter・検索ボタンでの検索だけ。URL から開き直したときと、直前と同じ語は送らない）。
+  // 件数は見つかった回（頁）の数。候補を確かめきっていなければ「20+」のように、その時点の数に + を付ける
+  let lastSent = '';
+  function sendSearch(q, count) {
+    if (!q || q === lastSent || typeof gtag !== 'function') return;
+    lastSent = q;
+    gtag('event', 'search', { search_term: q.slice(0, 100), result_count: String(count) });
+  }
+
+  async function search(send = false) {
     const q = input.value.trim();
     const g = groupSel.value;
     const r = { q, terms: [], cand: [], next: 0, pages: 0, hits: 0 };
@@ -212,15 +221,16 @@
       if (run !== r) return;
       r.cand = cand;
       await showMore(r);
+      if (send && run === r) sendSearch(q, r.next >= r.cand.length ? r.pages : `${r.pages}+`);
     } catch (e) {
       if (run === r) statusEl.textContent = '検索用のデータを読み込めませんでした';
     }
   }
 
   // 入力中は検索せず、Enter・検索ボタンで検索する
-  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') search(); });
-  document.getElementById('fsubmit').addEventListener('click', search);
-  groupSel.addEventListener('change', search);
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') search(true); });
+  document.getElementById('fsubmit').addEventListener('click', () => search(true));
+  groupSel.addEventListener('change', () => search());
   document.getElementById('fclear').addEventListener('click', () => { input.value = ''; search(); input.focus(); });
   moreBtn.addEventListener('click', () => { if (run) showMore(run); });
 
