@@ -93,17 +93,24 @@
       bands.push(y);
       y += BAND;
       g.rows.forEach(r => {
-        // 列ごとに上から積む。段が変わる (前の案から続く案になる) ところは STEP だけ空ける
-        const heights = cols.map((_, ci) => {
-          let dy = 0;
-          inCol(r, ci).forEach((n, k, ns) => {
-            if (k && level(n) > level(ns[k - 1])) dy += STEP;
-            pos.set(n.i, { x: PAD + ci * CW, y: y + PAD / 2 + dy });
-            dy += BH + GAP;
+        // 行の中を段 (レーン: たどり着く成立法の条ごと。データの l) に分け、段ごとに列の中を上から積む。
+        // 分かれた条の流れが別の段になるので、列を飛ばす線がほかの流れの箱を通らない。
+        // 段が変わる (前の案から続く案になる) ところは STEP だけ空ける
+        const lanes = [...new Set(r.nodes.map(n => n.l || 0))].sort((a, b) => a - b);
+        let top = 0;
+        lanes.forEach(ln => {
+          const heights = cols.map((_, ci) => {
+            let dy = 0;
+            inCol(r, ci).filter(n => (n.l || 0) === ln).forEach((n, k, ns) => {
+              if (k && level(n) > level(ns[k - 1])) dy += STEP;
+              pos.set(n.i, { x: PAD + ci * CW, y: y + PAD / 2 + top + dy });
+              dy += BH + GAP;
+            });
+            return dy;
           });
-          return dy;
+          top += Math.max(BH + GAP, ...heights);
         });
-        const h = Math.max(BH + GAP, ...heights) + PAD;
+        const h = top + PAD;
         rowsY.set(r, [y, h]);
         y += h;
       });
