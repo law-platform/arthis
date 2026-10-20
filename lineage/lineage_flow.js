@@ -39,7 +39,7 @@
   const inCol = (r, ci) => r.nodes.filter(n => n.c === ci).sort((a, b) => level(a) - level(b));
   // 条の名前。削除の条は赤で示し、「削除」とは書かない (マウスを置くと出る)
   const label = n => n.a + (n.g ? `(${n.g})` : '');
-  const tip = n => `${colFull(n.c)}　${label(n)}　［${STATUS[n.s]}］${n.e >= 0 ? '　✕ この段階で廃案' : ''}　${n.row.final ? '成立法 ' + n.row.final : '成立せず'}` + (n.t ? '\n' + n.t : '');
+  const tip = n => `${colFull(n.c)}　${label(n)}　［${STATUS[n.s]}］${n.e >= 0 ? '　✕ この段階で廃案' : ''}　${n.row.final ? '成立法 ' + n.row.final : n.row.adopted ? '成立（' + n.row.adopted + '）' : '成立せず'}` + (n.t ? '\n' + n.t : '');
 
   // 編・章のまとまりと、その中の新設・削除・廃案・統合や分割の数
   const groups = [];
@@ -180,7 +180,7 @@
   function drawTable() {
     if (tableView.dataset.ready) return;
     tableView.dataset.ready = '1';
-    const ended = r => !r.final;
+    const ended = r => !r.final && !r.adopted;   // 乙号議案・目次の全体像は、最後の段階に届いた行を成立とする
     const has = (r, f) => r.nodes.some(f);
     const filters = {
       all: ['すべての行', () => true],

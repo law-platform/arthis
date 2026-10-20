@@ -586,16 +586,6 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .law-text .Subitem1Sentence { padding-left: 3em; text-indent: -1em; }
 .law-text .lin-link { position: absolute; top: 0.35em; left: -4.5em; padding: 0 10px; border: 1px solid #bfdbfe; border-radius: 9999px; background: var(--accent-soft); color: var(--accent); font-size: 0.75rem; line-height: 1.6; text-decoration: none; }
 .law-text .lin-link:hover { background: #dbeafe; }
-/* 対訳の頁（lineage/<法令ID>/fr.html など）。日本語（左）と訳（右）を条ごとに 2 列に並べる。沿革のリンクの余白は左の列だけに取る */
-.law-text.law-parallel { max-width: none; }
-.law-parallel .MainProvision { padding-left: 0; }
-.law-parallel .par-src { margin: 0 0 1em; color: var(--muted); font-size: 0.875rem; }
-.law-parallel .par-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 32px; }
-.law-parallel .MainProvision .par-ja { padding-left: 4.5em; }
-@media (max-width: 767px) {
-  .law-parallel .par-row { grid-template-columns: 1fr; }
-  .law-parallel .par-tr { margin-bottom: 0.8em; color: var(--muted); }
-}
 
 /* 沿革の全体像（lineage/<法令ID>_flow.html）。描くのは lineage_flow.js。流れ図と対照表をタブで切り替える */
 .fl-tabs { display: flex; gap: 4px; margin: 0 0 12px; border-bottom: 1px solid var(--border); }
