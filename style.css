@@ -227,6 +227,11 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .b-trailer { margin-top: 8px; text-align: center; color: var(--muted); }
 .b-fw { font-size: 0.8125rem; color: #9ca3af; }
 .b-figure { font-size: 0.875rem; color: var(--muted); }
+/* 書籍の表（民法対照の条の対照など）。2 列を同じ幅にする */
+.b-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 0.9375rem; }
+.b-table th, .b-table td { padding: 4px 10px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+.b-table th { background: var(--accent-soft); color: var(--muted); font-size: 0.8125rem; font-weight: 600; }
+.b-gap { color: var(--muted); }
 .b-titlepage { text-align: center; }
 .b-doctitle { font-size: 1.25rem; font-weight: 700; letter-spacing: 0.1em; }
 
@@ -508,6 +513,30 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .lin-mat-book { border-left-color: #d97706; }
 .lin-mat > summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; padding: 10px 16px; cursor: pointer; font-size: 0.875rem; }
 .lin-mat > summary small { color: var(--muted); }
+/* 条文の下の参照のうち外国法へのリンクと、「参照の外国法」の欄（開くと lineage.js が外国法の頁から条文を読み込む） */
+.lin-ref-link { color: var(--accent); text-decoration: none; }
+.lin-ref-link:hover { text-decoration: underline; }
+.lin-refs { margin-top: 8px; font-size: 0.875rem; }
+.lin-refs > summary { cursor: pointer; color: var(--accent); }
+.lin-refs > summary small { margin-left: 6px; color: var(--muted); }
+.lin-ref { margin: 8px 0 0; padding: 6px 10px; border-left: 3px solid var(--border); }
+.lin-ref-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.lin-ref-law { font-weight: 600; }
+.lin-ref-arts { color: var(--muted); }
+.lin-ref-ver { font-size: 0.8125rem; }
+.lin-ref-full, .lin-ref-src a { color: var(--accent); text-decoration: none; }
+.lin-ref-src a { margin-right: 6px; }
+.lin-ref-body.law-text { max-width: none; margin: 4px 0 0; padding: 0; border: 0; box-shadow: none; background: transparent; line-height: 1.8; }
+.lin-ref-body.law-text .Article { margin: 0.2em 0; }
+/* 外国法の頁（github/foreign/）の原本などへのリンクと、一覧の版の並び */
+.foreign-links { margin: 0 0 12px; font-size: 0.875rem; }
+.foreign-links a, .foreign-versions a { color: var(--accent); text-decoration: none; }
+.foreign-versions { margin: 6px 0 0; padding-left: 1.2em; font-size: 0.875rem; list-style: disc; }
+.foreign-versions .foreign-src { margin-left: 6px; font-size: 0.8125rem; }
+.law-text .SupplNote, .law-text .NoteStruct { margin: 0.3em 0 0.3em 1em; color: var(--muted); font-size: 0.875rem; }
+.law-text .Column { margin-right: 1em; }
+/* 資料のカードの、除いた引用の中の参照（民法要義の「（財二四、二五）」など） */
+.lin-mat-body .lin-quote-ref { color: var(--muted); font-size: 0.875rem; }
 .lin-mat-body { padding: 0 16px 12px; border-top: 1px dashed var(--border); }
 .lin-mat-body > p, .lin-mat-body .speech p { margin: 8px 0 0; line-height: 1.9; }
 .lin-mat-links { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; font-size: 0.75rem; }
@@ -564,6 +593,16 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .law-text .Subitem1Sentence { padding-left: 3em; text-indent: -1em; }
 .law-text .lin-link { position: absolute; top: 0.35em; left: -4.5em; padding: 0 10px; border: 1px solid #bfdbfe; border-radius: 9999px; background: var(--accent-soft); color: var(--accent); font-size: 0.75rem; line-height: 1.6; text-decoration: none; }
 .law-text .lin-link:hover { background: #dbeafe; }
+/* 対訳の頁（lineage/<法令ID>/fr.html など）。日本語（左）と訳（右）を条ごとに 2 列に並べる。沿革のリンクの余白は左の列だけに取る */
+.law-text.law-parallel { max-width: none; }
+.law-parallel .MainProvision { padding-left: 0; }
+.law-parallel .par-src { margin: 0 0 1em; color: var(--muted); font-size: 0.875rem; }
+.law-parallel .par-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 32px; }
+.law-parallel .MainProvision .par-ja { padding-left: 4.5em; }
+@media (max-width: 767px) {
+  .law-parallel .par-row { grid-template-columns: 1fr; }
+  .law-parallel .par-tr { margin-bottom: 0.8em; color: var(--muted); }
+}
 
 /* 沿革の全体像（lineage/<法令ID>_flow.html）。描くのは lineage_flow.js。流れ図と対照表をタブで切り替える */
 .fl-tabs { display: flex; gap: 4px; margin: 0 0 12px; border-bottom: 1px solid var(--border); }

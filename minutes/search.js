@@ -3,6 +3,8 @@
 //   search/idx/NNN.json   見出し（正規化した 1 文字・隣り合う 2 文字）→ それを含む議事録の番号（差分で並べたもの）
 //   search/text/<ページ>.json  議題ごとの本文。候補の回だけ読み込み、語を含む議題を確かめて前後の文脈を出す
 //   見出しの作り方と振り分けの式は program/minutes_search.cs と同じ
+//   版のある巻（書籍の book_index.json の editions）は、同じ箇所（最新版で当たる頁）の結果を 1 件にまとめ、
+//   新しい版の結果を出して、ほかに当たった版を「ほかの版でも該当」に並べる
 (() => {
   const BASE = 'search/';
   const PAGES_PER_BATCH = 20;   // 「さらに表示」1 回で出す回数
@@ -131,10 +133,12 @@
     return { who: who === text.slice(segStart, segEnd).replace(SPEAKER, '') ? '' : who, html };
   }
 
-  function renderPage(pageNo, hits, q) {
+  // others: 同じ箇所で当たったほかの版の頁（新しい順）
+  function renderPage(pageNo, hits, q, others = []) {
     const [itemNo, page, title, date] = meta.pages[pageNo];
     const [groupNo, label] = meta.items[itemNo];
     const href = `${esc(page)}?q=${encodeURIComponent(q)}`;
+    const otherEds = others.map((p) => `<a href="${esc(meta.pages[p][1])}?q=${encodeURIComponent(q)}">${esc(meta.pages[p][4][1])}</a>`).join('・');
     const total = hits.reduce((n, h) => n + h.firsts.length, 0);
     let lis = '';
     let shown = 0;
@@ -150,8 +154,21 @@
     return `<article class="entry result">
 <div class="entry-meta"><span class="badge">${esc(meta.groups[groupNo])}</span><span class="crumb">${esc(label)}${date ? ' ・ ' + esc(date) : ''}</span><span class="source">${total} 箇所</span></div>
 <h3 class="hw"><a href="${href}">${esc(title)}</a></h3>
-<ul class="kwic">${lis}</ul>${rest > 0 ? `<p class="more-hits"><a href="${href}">ほか ${rest} 箇所 →</a></p>` : ''}
+<ul class="kwic">${lis}</ul>${rest > 0 ? `<p class="more-hits"><a href="${href}">ほか ${rest} 箇所 →</a></p>` : ''}${otherEds ? `<p class="ed-others">ほかの版でも該当：${otherEds}</p>` : ''}
 </article>`;
+  }
+
+  // 候補の頁を、同じ箇所の版ごとの組にする（pages の 5 つ目 [最新版で当たる頁, 版の名前, 版の古い順の番号]）。
+  // 組は最新版の頁の順、組の中は新しい版から。版のない頁は 1 頁で 1 組
+  function groupEditions(cand) {
+    const groups = new Map();
+    for (const p of cand) {
+      const key = meta.pages[p][4]?.[0] ?? p;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(p);
+    }
+    const rank = (p) => meta.pages[p][4]?.[2] ?? 0;
+    return [...groups].sort((a, b) => a[0] - b[0]).map(([, ps]) => ps.sort((a, b) => rank(b) - rank(a)));
   }
 
   // ── 検索の実行 ──
@@ -166,17 +183,24 @@
     moreWrap.hidden = true;
     let shown = 0;
     while (r.next < r.cand.length && shown < PAGES_PER_BATCH) {
-      const batch = r.cand.slice(r.next, r.next + FETCH_PARALLEL);
-      const texts = await Promise.all(batch.map(textOf));
+      // 本文を読み込む組（読み込む頁が FETCH_PARALLEL に達するまで。版の多い組は 1 組ずつ）
+      const batch = [];
+      for (let n = 0; n < FETCH_PARALLEL && r.next + batch.length < r.cand.length;) {
+        const g = r.cand[r.next + batch.length];
+        batch.push(g);
+        n += g.length;
+      }
+      const texts = await Promise.all(batch.map((g) => Promise.all(g.map(textOf))));
       if (run !== r) return;
       r.next += batch.length;
       let html = '';
-      batch.forEach((pageNo, i) => {
-        const hits = findHits(texts[i], r.terms);
-        if (!hits.length) return;
-        html += renderPage(pageNo, hits, r.q);
+      batch.forEach((g, i) => {
+        // 当たった版のうち最も新しいものを出し、ほかは「ほかの版でも該当」に
+        const found = g.map((p, j) => ({ p, hits: findHits(texts[i][j], r.terms) })).filter((x) => x.hits.length);
+        if (!found.length) return;
+        html += renderPage(found[0].p, found[0].hits, r.q, found.slice(1).map((x) => x.p));
         r.pages++;
-        r.hits += hits.reduce((n, h) => n + h.firsts.length, 0);
+        r.hits += found[0].hits.reduce((n, h) => n + h.firsts.length, 0);
         shown++;
       });
       results.insertAdjacentHTML('beforeend', html);
@@ -219,7 +243,7 @@
       let cand = await candidates(r.terms);
       if (g !== '') cand = cand.filter((p) => meta.items[meta.pages[p][0]][0] === Number(g));
       if (run !== r) return;
-      r.cand = cand;
+      r.cand = groupEditions(cand);
       await showMore(r);
       if (send && run === r) sendSearch(q, r.next >= r.cand.length ? r.pages : `${r.pages}+`);
     } catch (e) {

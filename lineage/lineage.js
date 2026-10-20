@@ -102,3 +102,47 @@ document.querySelectorAll('.lin-ed-select').forEach((sel) => {
     box.querySelector('.lin-mat-sub').textContent = b.dataset.sub;
   });
 });
+
+// 参照の外国法：欄を開いたとき、選んだ版の頁（github/foreign/）からその条（data-ids の id）を読み込んで並べる。
+// 頁は版ごとに 1 度だけ読み込む。版を選び直すと読み込み直し、「全文 →」の行き先もその版にする
+(() => {
+  const pages = new Map();
+  const load = (url) => {
+    if (!pages.has(url)) {
+      pages.set(url, fetch(url).then((r) => (r.ok ? r.text() : Promise.reject(r.status)))
+        .then((t) => new DOMParser().parseFromString(t, 'text/html')));
+    }
+    return pages.get(url);
+  };
+  const show = (box) => {
+    const sel = box.querySelector('.lin-ref-ver');
+    const body = box.querySelector('.lin-ref-body');
+    if (!sel || !body) return;
+    const ids = (box.dataset.ids || '').split(' ').filter(Boolean);
+    const full = box.querySelector('.lin-ref-full');
+    if (full) full.href = sel.value + (ids.length ? '#' + ids[0] : '');
+    if (!ids.length) { body.textContent = '条の番号が分からないため、全文から読んでください。'; return; }
+    body.textContent = '読み込み中…';
+    load(sel.value).then((doc) => {
+      body.textContent = '';
+      const text = doc.querySelector('.foreign-text');
+      if (text && text.lang) body.lang = text.lang;
+      let n = 0;
+      ids.forEach((id) => {
+        const el = doc.getElementById(id);
+        if (!el) return;
+        const c = el.cloneNode(true);
+        c.removeAttribute('id');
+        body.appendChild(c);
+        n++;
+      });
+      if (!n) body.textContent = 'この版にはその条が見つかりません。';
+    }).catch(() => { body.textContent = '条文を読み込めませんでした。'; });
+  };
+  document.querySelectorAll('.lin-refs').forEach((d) => {
+    d.addEventListener('toggle', () => {
+      if (d.open && !d.dataset.loaded) { d.dataset.loaded = '1'; d.querySelectorAll('.lin-ref').forEach(show); }
+    });
+    d.querySelectorAll('.lin-ref-ver').forEach((s) => s.addEventListener('change', () => show(s.closest('.lin-ref'))));
+  });
+})();
