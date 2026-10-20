@@ -513,20 +513,13 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .lin-mat-book { border-left-color: #d97706; }
 .lin-mat > summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; padding: 10px 16px; cursor: pointer; font-size: 0.875rem; }
 .lin-mat > summary small { color: var(--muted); }
-/* 条文の下の参照のうち外国法へのリンクと、「参照の外国法」の欄（開くと lineage.js が外国法の頁から条文を読み込む） */
-.lin-ref-link { color: var(--accent); text-decoration: none; }
-.lin-ref-link:hover { text-decoration: underline; }
-.lin-refs { margin-top: 8px; font-size: 0.875rem; }
-.lin-refs > summary { cursor: pointer; color: var(--accent); }
-.lin-refs > summary small { margin-left: 6px; color: var(--muted); }
-.lin-ref { margin: 8px 0 0; padding: 6px 10px; border-left: 3px solid var(--border); }
-.lin-ref-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
-.lin-ref-law { font-weight: 600; }
-.lin-ref-arts { color: var(--muted); }
-.lin-ref-ver { font-size: 0.8125rem; }
-.lin-ref-full, .lin-ref-src a { color: var(--accent); text-decoration: none; }
-.lin-ref-src a { margin-right: 6px; }
-.lin-ref-body.law-text { max-width: none; margin: 4px 0 0; padding: 0; border: 0; box-shadow: none; background: transparent; line-height: 1.8; }
+/* 参照のリンク（条文の下の注・資料の中）と、「参照」の区切りの法律ごとのカード（開くと lineage.js が参照法令の頁から条文を読み込む） */
+.ref-link { color: var(--accent); text-decoration: none; }
+.ref-link:hover { text-decoration: underline; }
+.lin-ref { border-left-color: #a78bfa; }
+.lin-ref-src { font-size: 0.875rem; color: var(--muted); }
+.lin-ref-src a { color: var(--accent); text-decoration: none; margin-right: 6px; }
+.lin-ref-body.law-text { max-width: none; margin: 4px 0 0; padding: 0; border: 0; box-shadow: none; background: transparent; line-height: 1.8; font-size: 0.9375rem; }
 .lin-ref-body.law-text .Article { margin: 0.2em 0; }
 /* 外国法の頁（github/foreign/）の原本などへのリンクと、一覧の版の並び */
 .foreign-links { margin: 0 0 12px; font-size: 0.875rem; }

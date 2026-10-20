@@ -103,8 +103,8 @@ document.querySelectorAll('.lin-ed-select').forEach((sel) => {
   });
 });
 
-// 参照の外国法：欄を開いたとき、選んだ版の頁（github/foreign/）からその条（data-ids の id）を読み込んで並べる。
-// 頁は版ごとに 1 度だけ読み込む。版を選び直すと読み込み直し、「全文 →」の行き先もその版にする
+// 参照（法律ごとのカード）：カードを開いたとき、選んだ版の頁（github/foreign/）からその条（data-ids の id）を読み込んで並べる。
+// 頁は版ごとに 1 度だけ読み込む。版を選び直すと読み込み直し、「全文を読む」の行き先もその版にする
 (() => {
   const pages = new Map();
   const load = (url) => {
@@ -139,10 +139,9 @@ document.querySelectorAll('.lin-ed-select').forEach((sel) => {
       if (!n) body.textContent = 'この版にはその条が見つかりません。';
     }).catch(() => { body.textContent = '条文を読み込めませんでした。'; });
   };
-  document.querySelectorAll('.lin-refs').forEach((d) => {
-    d.addEventListener('toggle', () => {
-      if (d.open && !d.dataset.loaded) { d.dataset.loaded = '1'; d.querySelectorAll('.lin-ref').forEach(show); }
-    });
-    d.querySelectorAll('.lin-ref-ver').forEach((s) => s.addEventListener('change', () => show(s.closest('.lin-ref'))));
+  document.querySelectorAll('details.lin-ref').forEach((d) => {
+    d.addEventListener('toggle', () => { if (d.open && !d.dataset.loaded) { d.dataset.loaded = '1'; show(d); } });
+    const sel = d.querySelector('.lin-ref-ver');
+    if (sel) sel.addEventListener('change', () => show(d));
   });
 })();
