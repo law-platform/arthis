@@ -103,7 +103,7 @@ document.querySelectorAll('.lin-ed-select').forEach((sel) => {
   });
 });
 
-// 参照（法律ごとのカード）：カードを開いたとき、選んだ版の頁（github/foreign/）からその条（data-ids の id）を読み込んで並べる。
+// 参照（法律ごとのカード）：カードを開いたとき、選んだ版の頁（github/refs/）からその条（data-ids の id）を読み込んで並べる。
 // 頁は版ごとに 1 度だけ読み込む。版を選び直すと読み込み直し、「全文を読む」の行き先もその版にする
 (() => {
   const pages = new Map();
@@ -115,17 +115,18 @@ document.querySelectorAll('.lin-ed-select').forEach((sel) => {
     return pages.get(url);
   };
   const show = (box) => {
-    const sel = box.querySelector('.lin-ref-ver');
+    const sel = box.querySelector('.lin-ref-ver');   // 版が 1 つなら選択はなく、data-src の頁
+    const src = sel ? sel.value : box.dataset.src;
     const body = box.querySelector('.lin-ref-body');
-    if (!sel || !body) return;
+    if (!src || !body) return;
     const ids = (box.dataset.ids || '').split(' ').filter(Boolean);
     const full = box.querySelector('.lin-ref-full');
-    if (full) full.href = sel.value + (ids.length ? '#' + ids[0] : '');
+    if (full) full.href = src + (ids.length ? '#' + ids[0] : '');
     if (!ids.length) { body.textContent = '条の番号が分からないため、全文から読んでください。'; return; }
     body.textContent = '読み込み中…';
-    load(sel.value).then((doc) => {
+    load(src).then((doc) => {
       body.textContent = '';
-      const text = doc.querySelector('.foreign-text');
+      const text = doc.querySelector('.ref-text');
       if (text && text.lang) body.lang = text.lang;
       let n = 0;
       ids.forEach((id) => {

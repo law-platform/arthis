@@ -521,11 +521,11 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .lin-ref-src a { color: var(--accent); text-decoration: none; margin-right: 6px; }
 .lin-ref-body.law-text { max-width: none; margin: 4px 0 0; padding: 0; border: 0; box-shadow: none; background: transparent; line-height: 1.8; font-size: 0.9375rem; }
 .lin-ref-body.law-text .Article { margin: 0.2em 0; }
-/* 外国法の頁（github/foreign/）の原本などへのリンクと、一覧の版の並び */
-.foreign-links { margin: 0 0 12px; font-size: 0.875rem; }
-.foreign-links a, .foreign-versions a { color: var(--accent); text-decoration: none; }
-.foreign-versions { margin: 6px 0 0; padding-left: 1.2em; font-size: 0.875rem; list-style: disc; }
-.foreign-versions .foreign-src { margin-left: 6px; font-size: 0.8125rem; }
+/* 参照法令の頁（github/refs/）の原本などへのリンクと、一覧の版の並び */
+.ref-page-links { margin: 0 0 12px; font-size: 0.875rem; }
+.ref-page-links a, .ref-versions a { color: var(--accent); text-decoration: none; }
+.ref-versions { margin: 6px 0 0; padding-left: 1.2em; font-size: 0.875rem; list-style: disc; }
+.ref-versions .ref-version-src { margin-left: 6px; font-size: 0.8125rem; }
 .law-text .SupplNote, .law-text .NoteStruct { margin: 0.3em 0 0.3em 1em; color: var(--muted); font-size: 0.875rem; }
 .law-text .Column { margin-right: 1em; }
 /* 資料のカードの、除いた引用の中の参照（民法要義の「（財二四、二五）」など） */
