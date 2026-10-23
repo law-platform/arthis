@@ -6,25 +6,32 @@
 ## 構成
 
 ```
-index.html             入口。各区画（議事録・書籍…）への案内
+index.html             入口。「条文の沿革」（分野ごとの法律の沿革へのリンク）と「本文の検索」（議事録・書籍・文書類・参照立法例をまとめて検索し、対象で絞り込む。分野は議事録・書籍・文書類だけ）
 style.css              入口の見た目（各区画の style.css と同じもの）
+search.js              本文の全文検索。索引と本文は各区画の search/ から読む（?q=語&g=分野&s=minutes,book,doc,refs）
+normalize.js           検索語と本文の正規化（旧字・新字、カタカナ・ひらがな、全角・半角を同一視。juridic と同じ）
 minutes/               明治法典編纂議事録（法律取調委員会・法典調査会など）
-  index.html             議事録一覧（分野 > 会議体 > 各回）と全文検索
+  index.html             議事録一覧（分野 > 会議体 > 各回）。以前の検索の URL（?q=…）は入口の検索へ移す
   <議事録>.html          各回の本文。議題ごとの「原本 →」から原本画像を並べて表示する
 book/                  明治法典 理由書・注釈書（エクスポゼ、民法草案理由書、ロエスレル商法草案、商法修正案参考書、民法要義など）
-  index.html             書籍一覧（分野 > 書物 > 巻 > 頁）と全文検索
+  index.html             書籍一覧（分野 > 書物 > 巻 > 頁）。以前の検索の URL（?q=…）は入口の検索へ移す
   <元データ>_NN.html      本文。大きな書物は編・章・節ごとに頁に分ける。条ごとのカード、原本画像のあるものは「原本 →」
   <元データ>_pair_NN.html 対訳（エクスポゼ・ロエスレルの原文と和訳）と版の比較（民法要義の初版と 34 版）。
                          2 つの巻を条ごとに揃えて左右に並べる（「交互に並べる」に切り替えられ、狭い画面では常に交互）。全文検索には入れない
   pair.js                左右・交互の切り替え
+doc/                   文書類（法律取調委員会の意見書・別案、ボアソナード・ロエスレルの意見など）。作りは minutes/ と同じ
+  index.html             文書類一覧（分野 > まとまり > 各文書）
+  <文書>.html            各文書の本文
+refs/                  参照立法例（旧民法などの既成法典と外国法。版＝原文・訳ごとに 1 頁）
+  index.html             国ごとの一覧
+  <版>.html              本文。条の id は a<条の n>。全文検索の単位は条で、検索用の本文（search/text/<版>_NN.json）は 15 万字ほどずつに分ける
 各区画の共通の中身:
   style.css              見た目（明治法律辞書検索 juridic と共通の作り）
   minutes.js             原本画像ビューア（OpenSeadragon で IIIF 画像を表示し、スクロールに連動させる）と検索語の強調
-  search.js              本文の全文検索（一覧ページ）
-  normalize.js           検索語と本文の正規化（旧字・新字、カタカナ・ひらがな、全角・半角を同一視。juridic と同じ）
-  search/                全文検索のデータ
+  normalize.js           検索語の強調に使う正規化（入口のものと同じ）
+  search/                全文検索のデータ（入口の search.js が読む）
     pages.json             ページの一覧（索引での番号の順）
-    idx/NNN.json           索引（正規化した 1 文字・2 文字 → それを含むページ）。検索語に必要なファイルだけ読み込む
+    idx/NNN.json           索引（正規化した 1 文字・2 文字・欧文の 3 文字 → それを含むページ）。検索語に必要なファイルだけ読み込む
     text/<ページ>.json     カードごとの本文。候補のページだけ読み込み、該当箇所と前後の文脈を出す
     norm.json              旧字→新字の対応表（法律情報基盤の直下にある共通の対応表 kanji_normalize.tsv のうち 1 文字→1 文字のもの）
 ```
@@ -35,7 +42,9 @@ book/                  明治法典 理由書・注釈書（エクスポゼ、�
   `data/minutes/adapted/*.xml`（原文を現代文にしたものなど）は各回のページだけを作り、一覧・前後の回・全文検索には入れない。原文の書誌情報の「関連」（TEI の `relatedItem`）からだけ辿れる。
 - `book/` … `convert_book_to_html.ps1` が `data/book/*.xml` から。一覧の階層（分野・書物・巻の表示名と順序）と、並べて読む組（`parallels`）は `data/book_index.json` で定める。
   並べる組は、条などのまとまりの `corresp` が同じものを手がかりに行を揃える。
-- `index.html` … `write_site_index.ps1`（上の 2 つが最後に呼ぶ）。区画のフォルダ（`minutes/`・`book/`・`doc/`）があるものだけを並べる。
+- `doc/` … `convert_doc_to_html.ps1` が `data/doc/*.xml` から（議事録と同じ `convert_minutes_to_html.ps1` に区画の名前などを渡す）。一覧の階層は `data/doc_index.json` で定める。
+- `refs/` … `convert_refs_to_html.ps1` が `data/ref/` から。一覧と版は `data/ref/index.json` で定める。
+- `index.html`・`search.js`・`normalize.js` … `write_site_index.ps1`（上の 4 つが最後に呼ぶ）。区画のフォルダがあるものだけを並べ、`search/pages.json` のある区画を全文検索の対象にする。
 
 ヘッダー・フッター・書誌情報の表示は `site_common.ps1`、見た目とスクリプトは `site_assets/` を各区画で共有する。
 
@@ -46,7 +55,10 @@ book/                  明治法典 理由書・注釈書（エクスポゼ、�
 ```
 powershell -File program\convert_minutes_to_html.ps1
 powershell -File program\convert_book_to_html.ps1
+powershell -File program\convert_doc_to_html.ps1
+powershell -File program\convert_refs_to_html.ps1
 ```
 
 1 件だけ確かめるときは `-Only` を付ける（議事録は出力ファイル名、例: `-Only 129a0089_1_g18960701_180.html`。書籍は元データのファイル名、例: `-Only "129a0089_131a0009_minpoyogi#2-01ed.xml"`）。
 全文検索の索引は全件を変換したときだけ作り直すので、`-Only` で本文を変えたときは最後に全件を変換し直す。
+変換は、上のように別々の `powershell -File` で動かす（同じ PowerShell の中で続けて動かすと、索引を作るクラスの中身が残り、後の区画の索引に前の区画のページが混ざる）。

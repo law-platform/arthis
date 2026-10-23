@@ -17,7 +17,7 @@
   tailwind.config = { theme: { extend: { fontFamily: { sans: ['"Noto Sans JP"', 'ui-sans-serif', 'system-ui', 'sans-serif'] } } } }
 </script>
 <title>条文沿革データベース</title>
-<meta name="description" content="明治期の民法・商法の編纂に関わる議事録・理由書・注釈書などの本文を、国立国会図書館の原本画像と並べて読み、全文検索する">
+<meta name="description" content="明治期の民法・商法の条文の沿革と、編纂に関わる議事録・理由書・注釈書・参照立法例の本文を、国立国会図書館の原本画像と並べて読み、全文検索する">
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-gray-50 text-gray-900 min-h-screen font-sans">
@@ -30,35 +30,55 @@
 
 <div class="max-w-3xl mx-auto px-4 pt-8">
   <div class="mb-6 fade-down">
-    <h1 class="text-2xl font-bold text-gray-900 tracking-wide">条文沿革データベース</h1>
-    <p class="mt-2 text-sm text-gray-500">明治期の民法・商法（旧民法・明治民法・旧商法・明治商法）の編纂に関わる資料の本文</p>
+    <h1 class="text-2xl font-bold text-gray-900 tracking-wide"><a href="./">条文沿革データベース</a></h1>
   </div>
 
-  <article class="entry">
-    <div class="entry-meta"><span class="badge">沿革</span></div>
-    <h2 class="hw"><a href="lineage/">条文の沿革</a></h2>
-    <p class="mt-2 text-sm text-gray-600 leading-relaxed">成立した法律の条ごとに、草案の各段階の条文と、それを審議した議事録・理由書をさかのぼって読めます。</p>
-  </article>
-  <article class="entry">
-    <div class="entry-meta"><span class="badge">草案</span></div>
-    <h2 class="hw"><a href="draft/">明治法典 草案</a></h2>
-    <p class="mt-2 text-sm text-gray-600 leading-relaxed">法典調査会の原案・修正原案・決議案、帝国議会に出された修正案など、草案の各段階の全文。条ごとの沿革へ進めます。</p>
-  </article>
-  <article class="entry">
-    <div class="entry-meta"><span class="badge">議事録</span><span class="source">908 回</span></div>
-    <h2 class="hw"><a href="minutes/">明治法典編纂議事録</a></h2>
-    <p class="mt-2 text-sm text-gray-600 leading-relaxed">法律取調委員会・法典調査会などで民法・商法の草案を審議した議事録。国立国会図書館の原本画像と並べて読み、全文検索できます。</p>
-  </article>
-  <article class="entry">
-    <div class="entry-meta"><span class="badge">書籍</span><span class="source">26 冊</span></div>
-    <h2 class="hw"><a href="book/">明治法典 理由書・注釈書</a></h2>
-    <p class="mt-2 text-sm text-gray-600 leading-relaxed">ボワソナードのエクスポゼ（民法理由書）、民法草案理由書、ロエスレルの商法草案註釈、商法修正案参考書、梅謙次郎『民法要義』など。条ごとの本文を読み、全文検索できます。</p>
-  </article>
-  <article class="entry">
-    <div class="entry-meta"><span class="badge">参照法令</span></div>
-    <h2 class="hw"><a href="refs/">参照法令</a></h2>
-    <p class="mt-2 text-sm text-gray-600 leading-relaxed">草案の参照に挙げられた法令。旧民法などの既成法典と、フランス・イタリア・ドイツなどの外国法の原文と当時の訳を条ごとに読め、原本へのリンクがあります。</p>
-  </article>
+  <section class="home-card">
+    <h2 class="home-card-title"><a href="lineage/">条文の沿革</a></h2>
+    <dl class="home-laws">
+      <div><dt>明治民法</dt><dd><a href="lineage/129a0089/flow.html">民法［1～3編］</a><a href="lineage/131a0009/flow.html">民法［4～5編］</a><a href="lineage/129a0089_otsu/flow.html">民法 乙号議案</a><a href="lineage/129a0089_toc/flow.html">民法 目次</a></dd></div>
+      <div><dt>明治商法</dt><dd><a href="lineage/132a0048/flow.html">商法</a></dd></div>
+    </dl>
+  </section>
+
+  <section class="home-card" role="search" aria-label="本文の全文検索">
+    <h2 class="home-card-title">本文の検索</h2>
+    <div class="home-search">
+      <div class="search-row">
+        <input id="fq" type="search" autocomplete="off" aria-label="本文を検索" placeholder="本文を検索（例：所有權　登記）">
+        <button id="fclear" type="button" title="クリア" aria-label="クリア">×</button>
+        <button id="fsubmit" type="button">検索</button>
+      </div>
+      <div class="options">
+        <span class="sources">対象
+          <label><input type="checkbox" class="fsrc" value="minutes" data-kind="議事録" data-fields checked>議事録</label>
+          <label><input type="checkbox" class="fsrc" value="book" data-kind="書籍" data-fields checked>書籍</label>
+          <label><input type="checkbox" class="fsrc" value="doc" data-kind="文書類" data-fields checked>文書類</label>
+          <label><input type="checkbox" class="fsrc" value="refs" data-kind="参照立法例" checked>参照立法例</label>
+        </span>
+        <label>分野<small>（議事録・書籍・文書類）</small> <select id="fgroup"><option value="">すべて</option>
+          <option value="0">明治民法</option>
+          <option value="1">旧民法・法例</option>
+          <option value="2">明治商法</option>
+          <option value="3">旧商法</option>
+        </select></label>
+      </div>
+      <p class="hint">複数語は空白区切りで AND 検索（議事録・文書類は同じ議題などのまとまり、書籍は同じ条・段落のまとまり、参照立法例は同じ条の中にすべてを含む箇所）。旧字・新字（權／権）、カタカナ・ひらがな、全角・半角、アクセントの有無、大文字・小文字の違いは区別しません。</p>
+    </div>
+    <div class="home-lists">
+      <h3>資料の一覧</h3>
+      <ul>
+        <li><a href="minutes/"><span>議事録</span><small>908 回</small></a></li>
+        <li><a href="book/"><span>書籍</span><small>26 冊</small></a></li>
+        <li><a href="doc/"><span>文書類</span><small>40 件</small></a></li>
+        <li><a href="refs/"><span>参照立法例</span><small>238 法令</small></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <p id="fstatus" class="mt-6 mb-4 text-sm text-gray-500"></p>
+  <section id="results" aria-live="polite"></section>
+  <div id="more-wrap" class="more-wrap" hidden><button id="more" type="button">さらに表示</button></div>
 
 </div>
 
@@ -72,5 +92,7 @@
     </div>
   </div>
 </footer>
+<script src="normalize.js"></script>
+<script src="search.js"></script>
 </body>
 </html>
