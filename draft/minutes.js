@@ -1,9 +1,9 @@
-// 一覧の全文検索から開かれたとき（?q=…）は、本文中の検索語を強調し、該当の議題（#pN）か最初の該当箇所へ移る
-//   正規化は normalize.js（一覧の検索と同じ）。段落をまたぐ語は強調しない
+// 入口の全文検索から開かれたとき（?q=…）は、本文中の検索語を強調し、該当の議題（#pN）か最初の該当箇所へ移る
+//   正規化は normalize.js（入口の検索と同じ）。段落をまたぐ語は強調しない
 (async () => {
   const q = new URLSearchParams(location.search).get('q');
   const N = window.MinutesNorm;
-  const root = document.querySelector('.minutes');
+  const root = document.querySelector('.minutes, .ref-text');   // 議事録・書籍の本文と、参照立法例の本文
   if (!q || !N || !root) return;
   await N.load('search/');
   const terms = N.terms(q);
@@ -212,16 +212,16 @@
 
 })();
 
-// 一覧の全文検索から開かれたとき（?q=…）は、上端のリンク（#back-link）を「← 検索結果に戻る」にする（司法省日誌と同じ）。
-// 一覧から来た場合は、目次などで移動して増えた履歴もまとめて遡って戻る（「さらに表示」で出した分・スクロール位置も
-// 一覧の search.js が戻す）。別タブで開いた等で戻る先が無いときは同じ検索語で開き直す
+// 入口の全文検索から開かれたとき（?q=…）は、上端のリンク（#back-link）を「← 検索結果に戻る」にする（司法省日誌と同じ）。
+// 検索から来た場合は、目次などで移動して増えた履歴もまとめて遡って戻る（「さらに表示」で出した分・スクロール位置も
+// 入口の search.js が戻す）。別タブで開いた等で戻る先が無いときは同じ検索語で開き直す。入口は区画のフォルダの 1 つ上
 (() => {
   const q = new URLSearchParams(location.search).get('q');
   const link = document.getElementById('back-link');
   if (!q || !link) return;
   link.textContent = '← 検索結果に戻る';
-  link.href = 'index.html?' + new URLSearchParams({ q });
-  const list = new URL('index.html', location.href).pathname;
+  link.href = '../?' + new URLSearchParams({ q });
+  const list = new URL('../index.html', location.href).pathname;
   let fromSearch = false;
   try {
     const ref = new URL(document.referrer);
