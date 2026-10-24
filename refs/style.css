@@ -557,9 +557,22 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .lin-ref-body.law-text .Article { margin: 0.2em 0; }
 /* 参照立法例の頁（github/refs/）の原本などへのリンクと、一覧の版の並び */
 .ref-page-links { margin: 0 0 12px; font-size: 0.875rem; }
-.ref-page-links a, .ref-versions a { color: var(--accent); text-decoration: none; }
-.ref-versions { margin: 6px 0 0; padding-left: 1.2em; font-size: 0.875rem; list-style: disc; }
-.ref-versions .ref-version-src { margin-left: 6px; font-size: 0.8125rem; }
+.ref-page-links a, .ref-laws a { color: var(--accent); text-decoration: none; }
+.ref-laws a:hover { text-decoration: underline; }
+/* 参照立法例の一覧: 国の目次と、法令ごとに法令名の下に版を縦に並べた表 */
+.ref-countries { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 24px; }
+.ref-countries a { padding: 2px 10px; border: 1px solid var(--border); border-radius: 9999px; background: var(--card-bg); color: var(--accent); font-size: 0.875rem; text-decoration: none; }
+.ref-countries a:hover { background: var(--accent-soft); }
+.ref-sub-title { margin: 14px 0 6px; font-size: 1rem; font-weight: 700; color: var(--muted); }
+.group-title + .ref-sub-title { margin-top: 0; }
+.ref-laws { margin: 0; padding: 0; list-style: none; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; }
+.ref-laws > li { padding: 8px 14px; border-top: 1px solid var(--border); line-height: 1.6; }
+.ref-laws > li:first-child { border-top: none; }
+.ref-laws .ref-law-name { font-size: 1.0625rem; font-weight: 700; color: var(--ink); }
+.ref-versions .badge { margin-left: 6px; }
+.ref-versions { margin: 2px 0 0; padding-left: 1.4em; list-style: disc; font-size: 0.9375rem; }
+.ref-versions .ref-version-src { margin-left: 6px; font-size: 0.875rem; }
+.ref-versions .ref-version-label { margin-left: 6px; color: var(--muted); font-size: 0.8125rem; }
 .law-text .SupplNote, .law-text .NoteStruct { margin: 0.3em 0 0.3em 1em; color: var(--muted); font-size: 0.875rem; }
 .law-text .Column { margin-right: 1em; }
 /* 資料のカードの、除いた引用の中の参照（民法要義の「（財二四、二五）」など） */
