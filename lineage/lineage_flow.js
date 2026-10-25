@@ -48,6 +48,9 @@
   //   編章節は見出しの文字 (第一節　私權ノ享有)。その段階の文字がなければ (議事録の段階など)、同じ行のほかの段階の見出しの文字
   const headText = n => n.t || (n.row.nodes.find(m => m.t) || n).t || n.a;
   const label = n => n.row.head ? headText(n) : n.a + (n.g ? `(${n.g})` : '');
+  // 表示の状態: 見出しで、その段階に文字がないもの (議事録の引用にしかない段階) は、比べられないが修正なしと同じく薄く出す。
+  //   新設の見出しは色を付けない (新設は帯の色の始まりで分かる)
+  const headStatus = n => !n.row.head ? n.s : (n.s === 'unknown' && !n.t ? 'same' : n.s === 'new' ? 'head-new' : n.s);
   // マウスを置いたときの説明。編章節は見出しの文字 (短い書き方は出さない。条文の行も見出しの文字と同じなので付けない)
   const tip = n => `${colFull(n.c)}　${label(n)}　［${STATUS[n.s]}］${n.e >= 0 ? '　✕ この段階で廃案' : ''}　${n.row.final ? '成立法 ' + n.row.final : n.row.adopted ? '成立（' + n.row.adopted + '）' : '成立せず'}` + (n.t && !n.row.head ? '\n' + n.t : '');
 
@@ -177,14 +180,15 @@
         svg += `<path class="fl-edge${n.s === 'merge' || n.s === 'split' ? ' fl-edge-ms' : ''}" d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}"/>`;
       });
       // その段階で廃案になった条: 箱の枠を赤にし、箱の右 (次の列との間) に ✕
-      //   編章節は箱に入れず、見出しの文字を帯の上に条より少し大きい字で直接出す (新設・削除だけはその色の箱)。
+      //   編章節は箱に入れず、見出しの文字を帯の上に条より少し大きい字で直接出す (削除だけはその色の箱。新設は帯の色の始まりで、
+      //   廃案は帯の色の終わりで分かるので、新設の色の箱も ✕ も付けない)。
       //   押せる範囲は箱と同じ大きさの透明な四角。見出しの文字は箱の左右に 8px ずつはみ出してよく、それでも入らない長い見出しは字の間を詰める
-      const ended = n.e >= 0;
       const hd = !!r.head;
+      const ended = n.e >= 0 && !hd;
       const text = label(n);
       const fit = hd && text.length * 15.5 > BW + 16 ? ` textLength="${BW + 16}" lengthAdjust="spacingAndGlyphs"` : '';
-      const rectCls = hd && n.s !== 'new' && n.s !== 'deleted' ? 'fl-hit' : 'fl-box';
-      const box = `<g class="fl-node st-${n.s}${ended ? ' fl-ended' : ''}${hd ? ` fl-head-node fl-lv${r.head.lv}` : ''}"><title>${esc(tip(n))}</title><rect class="${rectCls}" x="${b.x}" y="${b.y}" width="${BW}" height="${BH}" rx="4"/><text x="${b.x + BW / 2}" y="${b.y + 18}" text-anchor="middle"${fit}>${esc(text)}</text>`
+      const rectCls = hd && n.s !== 'deleted' ? 'fl-hit' : 'fl-box';
+      const box = `<g class="fl-node st-${headStatus(n)}${ended ? ' fl-ended' : ''}${hd ? ` fl-head-node fl-lv${r.head.lv}` : ''}"><title>${esc(tip(n))}</title><rect class="${rectCls}" x="${b.x}" y="${b.y}" width="${BW}" height="${BH}" rx="4"/><text x="${b.x + BW / 2}" y="${b.y + 18}" text-anchor="middle"${fit}>${esc(text)}</text>`
         + (ended ? `<text class="fl-x" x="${b.x + BW + 4}" y="${b.y + 18}">✕</text>` : '') + '</g>';
       boxes += n.h ? `<a href="${esc(n.h)}">${box}</a>` : box;
     }));
@@ -255,8 +259,8 @@
       <button type="button" class="tb-fold">すべて閉じる</button></div>${legend}
       <div class="fl-scroll tb-scroll"><table class="tb-table"><thead>${tableHead()}</thead><tbody></tbody></table></div>`;
     const body = tableView.querySelector('tbody');
-    const cell = n => (n.h ? `<a class="tb-n st-${n.s}" href="${esc(n.h)}" title="${esc(tip(n))}">${esc(label(n))}</a>` : `<span class="tb-n st-${n.s}" title="${esc(tip(n))}">${esc(label(n))}</span>`)
-      + (n.e >= 0 ? '<span class="tb-x" title="この段階で廃案">✕</span>' : '');
+    const cell = n => (n.h ? `<a class="tb-n st-${headStatus(n)}" href="${esc(n.h)}" title="${esc(tip(n))}">${esc(label(n))}</a>` : `<span class="tb-n st-${headStatus(n)}" title="${esc(tip(n))}">${esc(label(n))}</span>`)
+      + (n.e >= 0 && !n.row.head ? '<span class="tb-x" title="この段階で廃案">✕</span>' : '');   // 見出しの行には ✕ を付けない (フローと同じ)
     // 見出しの行: 編章節の行そのものを階層の色の帯にし、各段階の欄に見出しの文字を出す (旧サイトの表と同じ)。
     //   いちばん左の欄の ▾ で、その見出しの下の行を折りたたむ。編章節の行のない見出しだけ、見出しの文字の行 (表の幅いっぱい) にする
     //   どの行にも、上にある見出しの番号を data-anc に書き、閉じた見出しが 1 つでもあれば隠す

@@ -115,6 +115,7 @@
 .home-laws > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; padding: 8px 0; border-top: 1px dashed var(--border); }
 .home-laws dt { flex: none; width: 6em; font-size: 0.875rem; font-weight: 600; color: var(--muted); }
 .home-laws dd { display: flex; flex: 1; flex-wrap: wrap; gap: 4px 20px; margin: 0; }
+.home-laws-set { display: flex; flex-basis: 100%; flex-wrap: wrap; gap: 4px 20px; }   /* 分野の中の組 (旧民法の公布日ごと) は 1 行ずつ */
 .home-laws a { color: var(--accent); font-weight: 500; text-decoration: none; }
 .home-laws a:hover { text-decoration: underline; }
 /* 本文の検索: カードの下端の「資料の一覧」。各区画の一覧へのリンクを件数と縦に並べる */
@@ -706,13 +707,18 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .tb-table .tb-lv0 th, .tb-table .tb-lv0 td { background: #3730a3; color: #fff; }
 .tb-table .tb-lv1 th, .tb-table .tb-lv1 td { background: #818cf8; }
 .tb-table .tb-lv2 th, .tb-table .tb-lv2 td { background: #c7d2fe; }
-.tb-table .tb-lv3 th, .tb-table .tb-lv3 td { background: #eef2ff; }
+.tb-table .tb-lv3 th, .tb-table .tb-lv3 td { background: #d9e0ff; }
+/* 旧民法は 編・部・章・節・款・目 の 6 段 */
+.tb-table .tb-lv4 th, .tb-table .tb-lv4 td { background: #e0e7ff; }
+.tb-table .tb-lv5 th, .tb-table .tb-lv5 td { background: #e0e7ff; }
 /* 見出しの行で、その段階に見出しのない欄 (主査会・総会にない見出し、削除された後の段階など) は白 */
 .tb-table .tb-headrow td.tb-empty { background: #fff; }
 .fl-svg .fl-band.fl-lv0 { fill: #3730a3; }
 .fl-svg .fl-band.fl-lv1 { fill: #818cf8; }
 .fl-svg .fl-band.fl-lv2 { fill: #c7d2fe; }
-.fl-svg .fl-band.fl-lv3 { fill: #eef2ff; }
+.fl-svg .fl-band.fl-lv3 { fill: #d9e0ff; }
+.fl-svg .fl-band.fl-lv4 { fill: #e0e7ff; }
+.fl-svg .fl-band.fl-lv5 { fill: #e0e7ff; }
 .fl-svg .fl-band-text.fl-lv0 { fill: #fff; }
 .tb-table .tb-lv0 button, .tb-table .tb-lv0 button::before, .tb-table .tb-lv0 small { color: #fff; }
 .tb-group:not(.tb-lv0):not(.tb-lv1) th button { font-weight: 500; }
@@ -722,7 +728,7 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 /* 編章節の行 (旧サイトの表と同じく、見出しの行そのものを階層の色の帯にし、各段階の欄に見出しの文字を出す)。
    いちばん左の欄の ▾ (tb-toggle) で、その見出しの下の行を折りたたむ。
    見出しの文字は札や箱に入れず、帯の上に直接出す。前の段階から変わった見出し (と原案) は普通の字 (編の濃い帯は白い字)、
-   変わらない段階の見出しは帯と同じ色にして見えなくする (押せば沿革のページへ移る。フローではマウスを置くと浮かび上がる)。新設・削除はその色の地のまま */
+   変わらない段階の見出しは帯と同じ色にして見えなくする (押せば沿革のページへ移る。フローではマウスを置くと浮かび上がる)。削除はその色の地のまま。新設は帯の色の始まりで分かるので色を付けない (st-head-new) */
 .tb-group .tb-toggle { padding: 0 2px 0 0; font-size: 0.825rem; }
 .tb-headrow .tb-n { font-size: 1.1rem; white-space: normal; }   /* 見出しは欄の中で折り返す (表が枠より広くならないように) */
 .tb-headrow .tb-n:not(.st-same):not(.st-new):not(.st-deleted) { color: #1e1b4b; }
@@ -730,7 +736,9 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .tb-headrow.tb-lv0 .tb-n.st-same { color: #3730a3; }
 .tb-headrow.tb-lv1 .tb-n.st-same { color: #818cf8; }
 .tb-headrow.tb-lv2 .tb-n.st-same { color: #c7d2fe; }
-.tb-headrow.tb-lv3 .tb-n.st-same { color: #eef2ff; }
+.tb-headrow.tb-lv3 .tb-n.st-same { color: #d9e0ff; }
+.tb-headrow.tb-lv4 .tb-n.st-same { color: #e0e7ff; }
+.tb-headrow.tb-lv5 .tb-n.st-same { color: #e0e7ff; }
 /* 表では、見えない見出しが欄の中で折り返して帯を高くしないよう、押せる幅 (2em) だけを残す (マウスを置くと説明が出る) */
 .tb-headrow .tb-n.st-same { display: inline-block; max-width: 2em; overflow: hidden; white-space: nowrap; vertical-align: top; }
 .fl-svg .fl-hit { fill: transparent; stroke: none; }
@@ -739,7 +747,9 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .fl-svg .fl-head-node.fl-lv0.st-same text { fill: #3730a3; }
 .fl-svg .fl-head-node.fl-lv1.st-same text { fill: #818cf8; }
 .fl-svg .fl-head-node.fl-lv2.st-same text { fill: #c7d2fe; }
-.fl-svg .fl-head-node.fl-lv3.st-same text { fill: #eef2ff; }
+.fl-svg .fl-head-node.fl-lv3.st-same text { fill: #d9e0ff; }
+.fl-svg .fl-head-node.fl-lv4.st-same text { fill: #e0e7ff; }
+.fl-svg .fl-head-node.fl-lv5.st-same text { fill: #e0e7ff; }
 .fl-svg a:hover .fl-head-node.st-same text { fill: #4b5563; }
 .fl-svg a:hover .fl-head-node.fl-lv0.st-same text { fill: #a5b4fc; }
 .fl-svg .fl-head-node.st-new text, .fl-svg .fl-head-node.st-deleted text { fill: var(--ink); }

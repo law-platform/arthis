@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<!-- Google tag (gtag.js)。法律情報基盤の全サイトで 1 つのプロパティ。サイトは content_group で分ける -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QKX7VJWQW6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QKX7VJWQW6', { content_group: 'arthis' });
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { theme: { extend: { fontFamily: { sans: ['"Noto Sans JP"', 'ui-sans-serif', 'system-ui', 'sans-serif'] } } } }
+</script>
+<title>民法［財產編］ フロー | 条文の沿革</title>
+<meta name="description" content="法律全体について、草案の各段階の条を箱で並べ、引き継ぎを線でつなぐ。統合・分割は線の合流・分岐、途中で終わった条は「続きなし」で示す">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen font-sans">
+
+<header class="lp-header">
+  <div class="lp-header-inner">
+    <div class="title-box"><h1 class="lp-title"><a href="https://law-platform.jp/">法律情報基盤</a></h1><h2 class="lp-subtitle"><a href="https://law-platform.jp/"> - Legal Information Platform - </a></h2></div>
+  </div>
+</header>
+
+<div class="max-w-none mx-auto px-4 pt-8">
+  <p class="doc-back doc-back-top"><a href="../../index.html">← 条文沿革データベース</a></p>
+
+  <div class="mb-6 fade-down">
+    <h1 id="top" class="text-2xl font-bold text-gray-900 tracking-wide">民法［財產編］</h1>
+    <p class="mt-2 text-sm text-gray-500">明治二十三年法律第二十八號（明治二十三年四月二十一日公布）</p>
+  </div>
+  <nav class="fl-tabs" role="tablist"><a role="tab" href="flow.html" aria-selected="true">フロー</a><a role="tab" href="table.html">テーブル</a><a role="tab" href="index.html">条文</a></nav>
+
+  <div id="flow" data-view="flow"></div>
+
+</div>
+
+<footer class="lp-footer">
+  <div class="lp-footer-inner">
+    <p><a href="https://law-platform.jp/terms">サイトポリシー</a></p>
+    <p>Copyright &copy;<a href="https://researchmap.jp/30419428" rel="noopener noreferrer" target="_blank"> SANO Tomoya</a></p>
+    <div>
+      <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener noreferrer" target="_blank"><img alt="CC BY 4.0" class="cc-logo" src="https://licensebuttons.net/l/by/4.0/88x31.png" /></a>
+      <p>本データベースは、<a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener noreferrer" target="_blank">クリエイティブ・コモンズ 表示 4.0 ライセンス</a>のもとで利用できます。</p>
+    </div>
+  </div>
+</footer>
+<script src="flow.js"></script>
+<script src="../lineage_flow.js"></script>
+</body>
+</html>
