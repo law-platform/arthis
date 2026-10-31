@@ -256,6 +256,9 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .book .b-head.b-missing { color: #9ca3af; font-weight: 400; }
 .book .entry p + p { margin-top: 0.5em; }
 .book .entry { overflow-wrap: anywhere; }
+/* 書籍は 1 巻を 1 頁にしている（数 MB になる巻もある）ので、画面の外のカード・行は描くのを後回しにする。
+   描いた後は大きさを覚える（auto）。中身は HTML にあるので、ページ内検索・頁の途中へのリンク・印刷はそのまま使える */
+.book > .entry, .book > .pair-row, .book > .pp { content-visibility: auto; contain-intrinsic-size: auto 320px; }
 /* 圏点（emph rend="open circle"） */
 .kenten { font-style: normal; -webkit-text-emphasis: open circle; text-emphasis: open circle; }
 .emph { font-style: normal; font-weight: 700; }
