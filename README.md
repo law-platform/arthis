@@ -40,11 +40,11 @@ refs/                  参照立法例（旧民法などの既成法典と外国
 
 このリポジトリの中身はすべて、リポジトリの外にある変換プログラム（`arthis/program/`）が元データ（`arthis/data/`、TEI）から生成する。
 
-- `minutes/` … `convert_minutes_to_html.ps1` が `data/minutes/*.xml` から。一覧の階層は `data/minutes_index.json` で定める。
+- `minutes/` … `convert_minutes_to_html.ps1` が `data/minutes/*.xml` から。一覧の階層は `data/minutes/minutes_index.json` で定める。
   `data/minutes/adapted/*.xml`（原文を現代文にしたものなど）は各回のページだけを作り、一覧・前後の回・全文検索には入れない。原文の書誌情報の「関連」（TEI の `relatedItem`）からだけ辿れる。
-- `book/` … `convert_book_to_html.ps1` が `data/book/*.xml` から。一覧の階層（分野・書物・巻の表示名と順序）と、並べて読む組（`parallels`）は `data/book_index.json` で定める。
+- `book/` … `convert_book_to_html.ps1` が `data/book/*.xml` から。一覧の階層（分野・書物・巻の表示名と順序）と、並べて読む組（`parallels`）は `data/book/book_index.json` で定める。
   並べる組は、条などのまとまりの `corresp` が同じものを手がかりに行を揃える。
-- `doc/` … `convert_doc_to_html.ps1` が `data/doc/*.xml` から（議事録と同じ `convert_minutes_to_html.ps1` に区画の名前などを渡す）。一覧の階層は `data/doc_index.json` で定める。
+- `doc/` … `convert_doc_to_html.ps1` が `data/doc/*.xml` から（議事録と同じ `convert_minutes_to_html.ps1` に区画の名前などを渡す）。一覧の階層は `data/doc/doc_index.json` で定める。
 - `refs/` … `convert_refs_to_html.ps1` が `data/ref/` から。一覧と版は `data/ref/index.json` で定める。
 - `index.html`・`search.js`・`normalize.js` … `write_site_index.ps1`（上の 4 つが最後に呼ぶ）。区画のフォルダがあるものだけを並べ、`search/pages.json` のある区画を全文検索の対象にする。
 
