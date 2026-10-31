@@ -32,6 +32,34 @@
   if (first) first.scrollIntoView({ block: 'center' });
 })();
 
+// 頁の途中（#pN）へのリンクで開いたときは、読み込みが終わって 3 秒たつまで、行き先を上端（scroll-margin-top の位置）に保つ
+//   大きな頁（書籍は 1 巻 1 頁。画面の外のカードは style.css の content-visibility で描くのを後回しにする）では、
+//   ブラウザ（Safari など）が行き先からずれた位置へスクロールしたままになることがあるため、毎フレーム行き先の位置を見て、ずれていれば戻す。
+//   利用者がスクロール・キー操作をしたらやめる。検索語のあるとき（?q=）は、上で該当箇所へ移る
+(() => {
+  if (new URLSearchParams(location.search).get('q')) return;
+  const id = decodeURIComponent(location.hash.slice(1));
+  const target = id && document.getElementById(id);
+  if (!target) return;
+  const margin = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+  const evs = ['wheel', 'touchstart', 'keydown', 'mousedown'];
+  let active = true;
+  let until = Infinity;
+  function stop() {
+    active = false;
+    for (const ev of evs) removeEventListener(ev, stop);
+  }
+  for (const ev of evs) addEventListener(ev, stop, { passive: true });
+  const settle = () => { until = performance.now() + 3000; };
+  if (document.readyState === 'complete') settle(); else addEventListener('load', settle, { once: true });
+  (function tick() {
+    if (!active) return;
+    if (performance.now() > until) { stop(); return; }
+    if (Math.abs(target.getBoundingClientRect().top - margin) > 1) target.scrollIntoView();
+    requestAnimationFrame(tick);
+  })();
+})();
+
 // 原本画像ビューア：国立国会図書館デジタルコレクションの IIIF 画像を本文の横（狭い画面では下）に表示する
 //   各カードの data-pid / data-frame がコマを指す。「原本 →」のクリックでそのコマを開き、
 //   「本文に連動」が有効なら、スクロールに合わせて表示中の議題のコマに切り替える
