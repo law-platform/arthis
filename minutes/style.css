@@ -557,6 +557,16 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .lin-ref { border-left-color: #a78bfa; }
 .lin-ref-src { font-size: 0.875rem; color: var(--muted); }
 .lin-ref-src a { color: var(--accent); text-decoration: none; margin-right: 6px; }
+/* 判例の参照 (ref_links.ps1 の Case-Html): 判例名は斜体、原本などへのリンク */
+.lin-ref-cases { margin: 0; padding-left: 1.2em; font-size: 0.875rem; list-style: disc; }
+.lin-ref-cases li { margin: 2px 0; }
+.lin-ref-cases a { color: var(--accent); text-decoration: none; }
+.lin-ref-cases a:hover { text-decoration: underline; }
+/* 伺指令・達・古法などの参照 (ref_links.ps1 の Doc-Html。一覧は data/ref_jp/jp_docs.csv): 件名・注記・本文 */
+.lin-ref-docs li { margin: 4px 0; }
+.lin-ref-docs .lin-ref-doc { font-size: 0.8125rem; margin-left: 4px; }
+.lin-ref-note { color: var(--muted); }
+.lin-ref-doc-text { margin: 2px 0 4px; padding-left: 0.8em; border-left: 2px solid var(--border); color: var(--muted); font-size: 0.8125rem; line-height: 1.7; }
 .lin-ref-body.law-text { max-width: none; margin: 4px 0 0; padding: 0; border: 0; box-shadow: none; background: transparent; line-height: 1.8; font-size: 0.9375rem; }
 .lin-ref-body.law-text .Article { margin: 0.2em 0; }
 /* 参照立法例の頁（github/refs/）の原本などへのリンクと、一覧の版の並び */

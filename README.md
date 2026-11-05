@@ -45,7 +45,7 @@ refs/                  参照立法例（旧民法などの既成法典と外国
 - `book/` … `convert_book_to_html.ps1` が `data/book/*.xml` から。一覧の階層（分野・書物・巻の表示名と順序）と、並べて読む組（`parallels`）は `data/book/book_index.json` で定める。
   並べる組は、条などのまとまりの `corresp` が同じものを手がかりに行を揃える。
 - `doc/` … `convert_doc_to_html.ps1` が `data/doc/*.xml` から（議事録と同じ `convert_minutes_to_html.ps1` に区画の名前などを渡す）。一覧の階層は `data/doc/doc_index.json` で定める。
-- `refs/` … `convert_refs_to_html.ps1` が `data/ref/` から。一覧と版は `data/ref/index.json` で定める。
+- `refs/` … `convert_refs_to_html.ps1` が `data/ref/`（外国法）・`data/ref_jp/`（日本の法令）から。一覧と版は `data/ref/index.json` で定める。
 - `index.html`・`search.js`・`normalize.js` … `write_site_index.ps1`（上の 4 つが最後に呼ぶ）。区画のフォルダがあるものだけを並べ、`search/pages.json` のある区画を全文検索の対象にする。
 
 各頁の中身は XSLT（XSLT 1.0。変換プログラムが .NET の XslCompiledTransform で動かす）が TEI から作る:
