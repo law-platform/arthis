@@ -589,6 +589,12 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .ref-versions .ref-version-label { margin-left: 6px; color: var(--muted); font-size: 0.8125rem; }
 .law-text .SupplNote, .law-text .NoteStruct { margin: 0.3em 0 0.3em 1em; color: var(--muted); font-size: 0.875rem; }
 .law-text .Column { margin-right: 1em; }
+/* 正誤（refs.xsl の tei:app）。本文は原本の文字で、正誤で変わった箇所に下線を引き、正誤による文字を後ろに小さく添える */
+.law-text .app-orig { text-decoration: underline dotted var(--muted); text-underline-offset: 3px; }
+.law-text .app-errata { color: var(--muted); font-size: 0.8125rem; }
+/* ボワソナード草案の他の版の対応する条（refs.xsl の ed-link） */
+.law-text .ed-links { padding-left: 1em; color: var(--muted); font-size: 0.8125rem; }
+.law-text .ed-links a { color: var(--accent); text-decoration: none; margin-right: 0.5em; }
 /* 資料のカードの、除いた引用の中の参照（民法要義の「（財二四、二五）」など） */
 .lin-mat-body .lin-quote-ref { color: var(--muted); font-size: 0.875rem; }
 .lin-mat-body { padding: 0 16px 12px; border-top: 1px dashed var(--border); }
@@ -628,17 +634,30 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .law-text .TOCLawTitle { margin-top: 0.5em; }
 .law-text .TOCPart, .law-text .TOCChapter, .law-text .TOCSection, .law-text .TOCSubsection, .law-text .TOCDivision { padding-left: 1em; }
 .law-text .LawTitle { margin: 1.5em 0 0.5em; font-size: 1.125rem; font-weight: 700; }
-.law-text .PartTitle, .law-text .ChapterTitle, .law-text .SectionTitle, .law-text .SubsectionTitle, .law-text .DivisionTitle { position: relative; margin: 1.2em 0 0.4em; font-weight: 700; scroll-margin-top: 48px; }
+.law-text .PartTitle, .law-text .SubpartTitle, .law-text .ChapterTitle, .law-text .SectionTitle, .law-text .SubsectionTitle, .law-text .SubSubsectionTitle, .law-text .DivisionTitle { position: relative; margin: 1.2em 0 0.4em; font-weight: 700; scroll-margin-top: 48px; }
 .law-text .PartTitle { padding-left: 3em; }
+/* 部 (Subpart)・SubSubsection は数が少ないので、前後の字下げを変えずに間に置く */
+.law-text .SubpartTitle { padding-left: 3.5em; }
 .law-text .ChapterTitle { padding-left: 4em; }
 .law-text .SectionTitle { padding-left: 5em; }
 .law-text .SubsectionTitle { padding-left: 6em; }
+.law-text .SubSubsectionTitle { padding-left: 6.5em; }
 .law-text .DivisionTitle { padding-left: 7em; }
+/* 外国法の TEI の区画 (ab type="level1" … 入れ子の深さ。structure_ref_units.ps1) */
+.law-text .level1Title, .law-text .level2Title, .law-text .level3Title, .law-text .level4Title, .law-text .level5Title, .law-text .level6Title, .law-text .level7Title, .law-text .level8Title { position: relative; margin: 1.2em 0 0.4em; font-weight: 700; scroll-margin-top: 48px; }
+.law-text .level1Title { padding-left: 3em; }
+.law-text .level2Title { padding-left: 4em; }
+.law-text .level3Title { padding-left: 5em; }
+.law-text .level4Title { padding-left: 6em; }
+.law-text .level5Title { padding-left: 7em; }
+.law-text .level6Title { padding-left: 8em; }
+.law-text .level7Title { padding-left: 9em; }
+.law-text .level8Title { padding-left: 10em; }
 /* 本則の左に「沿革」のリンクを置く余白の列（4.5em）を取る */
 .law-text .MainProvision { padding-left: 4.5em; }
 .law-text .Article { position: relative; margin: 0.3em -8px; padding: 0 8px; border-radius: 4px; scroll-margin-top: 48px; }
 .law-text .Article:target { background: #fefce8; }
-.law-text .ArticleCaption { padding-left: 1em; }
+.law-text .ArticleCaption, .law-text .ParagraphCaption { padding-left: 1em; }
 .law-text .ParagraphSentence { padding-left: 1em; text-indent: -1em; }
 /* 2 つ目以降の項（項番号のない古い法令）は 1 字下げて始める */
 .law-text .Paragraph + .Paragraph .ParagraphSentence { text-indent: 0; }

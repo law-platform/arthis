@@ -134,6 +134,8 @@ document.querySelectorAll('.lin-ed-select').forEach((sel) => {
         if (!el) return;
         const c = el.cloneNode(true);
         c.removeAttribute('id');
+        // 条の中のリンク (他の版の条など) は参照の頁からの相対なので、この頁から辿れる形に直す
+        c.querySelectorAll('a[href]').forEach((a) => { a.href = new URL(a.getAttribute('href'), new URL(src, location.href)).href; });
         body.appendChild(c);
         n++;
       });
