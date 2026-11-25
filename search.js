@@ -1,7 +1,8 @@
 // 本文の全文検索（入口のページ github/index.html。議事録 minutes/・書籍 book/ などの区画をまとめて検索する）
 //   対象の区画は入口のチェック（.fsrc。value はフォルダ名、data-kind は種別）で、分野は #fgroup（分野名で照合）で絞り込む。
 //   分野で絞るのは、groups が分野の区画（data-fields のあるもの。議事録・書籍）だけ。参照立法例の groups は国なので絞らない。
-//   索引と本文は区画ごとに <フォルダ>/search/ から読む。結果は区画ごとの順を保ったまま、区画を交互に並べる
+//   索引と本文は区画ごとに <フォルダ>/search/ から読む。結果は区画ごとの順を保ったまま、区画を交互に並べる。
+//   チェックに data-dirs があれば、その索引すべてを同じ区画として検索する（参照立法例の refs と注釈書・理由書の refs/book）
 //   search/pages.json     ページの一覧（索引での番号の順）と、索引を分けたファイルの数、件数の単位（unit）
 //   search/idx/NNN.json   見出し（正規化した 1 文字・隣り合う 2 文字）→ それを含む議事録の番号（差分で並べたもの）
 //   search/text/<ページ>.json  議題ごとの本文。候補の回だけ読み込み、語を含む議題を確かめて前後の文脈を出す。
@@ -27,8 +28,9 @@
   const moreWrap = document.getElementById('more-wrap');
   const moreBtn = document.getElementById('more');
 
-  // 区画ごとの索引の一覧・読み込んだ索引と本文。fields は分野で絞り込む区画か
-  const sources = srcBoxes.map((box) => ({ box, dir: box.value, kind: box.dataset.kind, fields: 'fields' in box.dataset, base: `${box.value}/search/`, meta: null, shardCache: new Map(), textCache: new Map() }));
+  // 索引ごとの一覧・読み込んだ索引と本文。fields は分野で絞り込む区画か。key はチェックの値（URL の s に使う）
+  const sources = srcBoxes.flatMap((box) => (box.dataset.dirs || box.value).split(' ').filter(Boolean).map((dir) => (
+    { box, key: box.value, dir, kind: box.dataset.kind, fields: 'fields' in box.dataset, base: `${dir}/search/`, meta: null, shardCache: new Map(), textCache: new Map() })));
 
   // 分野の選択は、分野で絞り込む区画にチェックがあるときだけ使える
   function syncGroupSel() {
@@ -201,7 +203,13 @@
   function setStatus(r) {
     const done = r.next >= r.cand.length;
     if (done && !r.pages) { statusEl.textContent = '該当する箇所はありません'; return; }
-    const counts = r.srcs.map((s) => `${s.kind} ${r.found.get(s)} ${s.meta.unit || '回'}`).join('・');
+    // 同じ区画の索引（参照立法例と注釈書）は件数を合わせる
+    const byKind = new Map();
+    for (const s of r.srcs) {
+      const c = byKind.get(s.kind);
+      byKind.set(s.kind, { n: (c ? c.n : 0) + r.found.get(s), unit: c ? c.unit : s.meta.unit || '回' });
+    }
+    const counts = [...byKind].map(([kind, c]) => `${kind} ${c.n} ${c.unit}`).join('・');
     statusEl.textContent = `${counts}・${r.hits} 箇所` + (done ? '' : `（候補 ${r.cand.length} 件のうち ${r.next} 件を確認済み）`);
   }
 
@@ -242,7 +250,7 @@
     const p = new URLSearchParams();
     if (q) p.set('q', q);
     if (q && g) p.set('g', g);
-    if (q && srcs.length < sources.length) p.set('s', srcs.map((s) => s.dir).join(','));
+    if (q && srcs.length < sources.length) p.set('s', [...new Set(srcs.map((s) => s.key))].join(','));
     history.replaceState(null, '', p.toString() ? `?${p}` : location.pathname);
   }
 
@@ -310,7 +318,7 @@
     if (groupSel.selectedIndex < 0) groupSel.value = '';
     if (params.get('s')) {
       const only = params.get('s').split(',');
-      for (const s of sources) s.box.checked = only.includes(s.dir);
+      for (const s of sources) s.box.checked = only.includes(s.key);
     }
     syncGroupSel();
     if (saved?.resultScrollY) history.scrollRestoration = 'manual';

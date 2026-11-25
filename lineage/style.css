@@ -193,6 +193,11 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 /* 書籍のカードの「対訳で読む →」：「原本 →」の左隣（原本へのリンクがなければ右端） */
 .entry-meta .pair-link { margin-left: auto; font-size: 0.75rem; }
 .entry-meta .pair-link + .source { margin-left: 12px; }
+/* 書籍・注釈書のカードの「条文 166条 →」（カードの corresp が指す参照立法例の条へ）：右寄せの並びの先頭 */
+.entry-meta .art-links { margin-left: auto; font-size: 0.75rem; color: var(--muted); }
+.entry-meta .art-links a { color: var(--accent); text-decoration: none; }
+.entry-meta .art-links a:hover { text-decoration: underline; }
+.entry-meta .art-links + .pair-link, .entry-meta .art-links + .source { margin-left: 12px; }
 
 .part { scroll-margin-top: 48px; }  /* 上端に固定した「← 一覧」に隠れないように */
 .part:target { outline: 3px solid #eda100; outline-offset: 2px; }
@@ -270,6 +275,15 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .b-table th, .b-table td { padding: 4px 10px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
 .b-table th { background: var(--accent-soft); color: var(--muted); font-size: 0.8125rem; font-weight: 600; }
 .b-gap { color: var(--muted); }
+/* 脚注（note place="foot"）。本文の注番号は注へのリンク、注はカードの末尾に区切り線の下にまとめ、注の番号は本文へ戻るリンク */
+.fn-ref { text-decoration: none; scroll-margin-top: 48px; }
+.fn-ref:hover { text-decoration: underline; }
+.footnotes { margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--border); font-size: 0.875rem; color: var(--muted); }
+.footnote { scroll-margin-top: 48px; }
+.footnote + .footnote { margin-top: 6px; }
+.footnote:target { background: var(--accent-soft); }
+.fn-back { text-decoration: none; }
+.fn-back:hover { text-decoration: underline; }
 .b-titlepage { text-align: center; }
 .b-doctitle { font-size: 1.25rem; font-weight: 700; letter-spacing: 0.1em; }
 
@@ -548,8 +562,7 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .lin-amend blockquote { margin-top: 4px; }
 .lin-mat { padding: 0; margin-bottom: 10px; border-left: 4px solid #9ca3af; }
 .lin-mat-minutes { border-left-color: #0d9488; }
-.lin-mat-book { border-left-color: #d97706; }
-.lin-mat > summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; padding: 10px 16px; cursor: pointer; font-size: 0.875rem; }
+.lin-mat-book { border-left-color: #d97706; }.lin-mat > summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; padding: 10px 16px; cursor: pointer; font-size: 0.875rem; }
 .lin-mat > summary small { color: var(--muted); }
 /* 参照のリンク（条文の下の注・資料の中）と、「参照」の区切りの法律ごとのカード（開くと lineage.js が参照立法例の頁から条文を読み込む） */
 .ref-link { color: var(--accent); text-decoration: none; }
@@ -592,6 +605,10 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 /* 正誤（refs.xsl の tei:app）。本文は原本の文字で、正誤で変わった箇所に下線を引き、正誤による文字を後ろに小さく添える */
 .law-text .app-orig { text-decoration: underline dotted var(--muted); text-underline-offset: 3px; }
 .law-text .app-errata { color: var(--muted); font-size: 0.8125rem; }
+.law-text .app-errata a { color: var(--accent); text-decoration: none; }
+/* 参照立法例の注釈書・理由書（data/ref/book）: 一覧の版の後ろと、版の頁の上に巻へのリンク。条の下の「注釈:」は他の版と同じ見た目（.ed-links） */
+.ref-versions .ref-version-books { margin-left: 6px; font-size: 0.8125rem; color: var(--muted); }
+.ref-versions .ref-version-books a { margin-left: 0.3em; }
 /* ボワソナード草案の他の版の対応する条（refs.xsl の ed-link） */
 .law-text .ed-links { padding-left: 1em; color: var(--muted); font-size: 0.8125rem; }
 .law-text .ed-links a { color: var(--accent); text-decoration: none; margin-right: 0.5em; }
@@ -599,6 +616,8 @@ mark { background: #fef08a; color: inherit; padding: 0 1px; border-radius: 2px; 
 .lin-mat-body .lin-quote-ref { color: var(--muted); font-size: 0.875rem; }
 .lin-mat-body { padding: 0 16px 12px; border-top: 1px dashed var(--border); }
 .lin-mat-body > p, .lin-mat-body .speech p { margin: 8px 0 0; line-height: 1.9; }
+/* 発言者は発言の最初の行と高さを揃える（発言の p と同じ上の余白・行の高さ） */
+.lin-mat-body .speaker { margin-top: 8px; line-height: 1.9; }
 .lin-mat-links { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; font-size: 0.75rem; }
 .lin-none { font-size: 0.8125rem; color: #9ca3af; margin: 0 0 10px; }
 
