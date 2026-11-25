@@ -24,8 +24,12 @@ doc/                   文書類（法律取調委員会の意見書・別案、
   index.html             文書類一覧（分野 > まとまり > 各文書）
   <文書>.html            各文書の本文
 refs/                  参照立法例（旧民法などの既成法典と外国法。版＝原文・訳ごとに 1 頁）
-  index.html             国ごとの一覧（外国法だけ。日本の法令は頁だけ書き出し、一覧・全文検索には入れない。条文の沿革の「参照」が条文を読み込む）
-  <版>.html              本文。条の id は a<条の n>。全文検索の単位は条で、検索用の本文（search/text/<版>_NN.json）は 15 万字ほどずつに分ける
+  index.html             国ごとの一覧（`data/ref/` の TEI の法令だけ。本文が `data/ref_jp/`・`data/draft/` の法令標準 XML の日本の法令は頁だけ書き出し、一覧・全文検索には入れない。条文の沿革の「参照」が条文を読み込む）
+  <版>.html              本文。条の id は a<条の n>。全文検索の単位は条で、検索用の本文（search/text/<版>_NN.json）は 15 万字ほどずつに分ける。
+                         注釈書・理由書のある版は、上に巻へのリンク、条の下に「注釈:」（その条の注釈のカードへ）を出し、正誤の「正誤」から正誤表の項目へ辿れる
+  book/                  参照立法例の注釈書・理由書（ボワソナード草案の Commentaire など）。作りは book/ と同じ（1 巻 1 頁。一覧の頁はなく、参照立法例の一覧と版の頁から辿る）
+    <巻>.html              本文。カードの右上の「条文」から、そのカードが注釈する版の条へ
+    search/                全文検索のデータ（入口の検索では「参照立法例」に含める）
 各区画の共通の中身:
   style.css              見た目（明治法律辞書検索 juridic と共通の作り）
   minutes.js             原本画像ビューア（OpenSeadragon で IIIF 画像を表示し、スクロールに連動させる）と検索語の強調
@@ -46,6 +50,7 @@ refs/                  参照立法例（旧民法などの既成法典と外国
   並べる組は、条などのまとまりの `corresp` が同じものを手がかりに行を揃える。
 - `doc/` … `convert_doc_to_html.ps1` が `data/doc/*.xml` から（議事録と同じ `convert_minutes_to_html.ps1` に区画の名前などを渡す）。一覧の階層は `data/doc/doc_index.json` で定める。
 - `refs/` … `convert_refs_to_html.ps1` が `data/ref/`（外国法）・`data/ref_jp/`（日本の法令）から。一覧と版は `data/ref/index.json` で定める。
+  `refs/book/` は、最初に `convert_book_to_html.ps1 -Refs`（別の powershell）が `data/ref/book/` から作る（巻は index.json の版の `books`）。
 - `index.html`・`search.js`・`normalize.js` … `write_site_index.ps1`（上の 4 つが最後に呼ぶ）。区画のフォルダがあるものだけを並べ、`search/pages.json` のある区画を全文検索の対象にする。
 
 各頁の中身は XSLT（XSLT 1.0。変換プログラムが .NET の XslCompiledTransform で動かす）が TEI から作る:
